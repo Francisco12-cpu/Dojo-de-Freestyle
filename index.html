@@ -8,13 +8,14 @@
   <link rel="icon" href="data:,">
   <title>Dojo de Freestyle</title>
   <style>
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 /* tokens.css — cores, tamanhos e componentes-base do Dojo. PRONTO: o style.css importa este arquivo
    (@import "tokens.css";) e só usa estas variáveis. Não crie cores novas fora daqui. Ver docs/VISUAL.md. */
 :root {
   --fundo:#0e0f13; --painel:#1a1c23; --painel-2:#11131a; --linha:#2b2f3a;
   --texto:#f2f2f2; --suave:#9aa3b2;
   --bumbo:#4da3ff; --caixa:#ff8a3d; --voz:#3ddc84; --erro:#ff4d5e; --aviso:#ffd23d;
-  --raio:14px; --raio-botao:12px; --toque:52px; --espaco:16px;
+  --raio:18px; --f-display:"Bebas Neue", Impact, "Oswald", "Arial Narrow", system-ui, sans-serif; --raio-botao:12px; --toque:52px; --espaco:16px;
   --f-tempo:700 48px system-ui; --f-titulo:700 21px system-ui; --f-contador:600 20px system-ui; --f-texto:16px/1.45 system-ui; --f-mono:13px/1.6 ui-monospace,Menlo,monospace;
 }
 * { box-sizing:border-box; }
@@ -98,7 +99,7 @@ label.botao, a.botao { display: flex; align-items: center; justify-content: cent
 .palavra.acesa { border-color: var(--voz); background: var(--voz); color: #06210f; }
 .botoes-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
 .botoes-4 .botao { min-height: 72px; font-size: 26px; }
-.botao.toque { min-height: 120px; font-size: 22px; margin-top: 10px; touch-action: manipulation; user-select: none; }
+.botao.toque { min-height: 96px; font-size: 22px; margin-top: 10px; touch-action: manipulation; user-select: none; }
 .barra-metrica.fina { height: 6px; margin: 8px 0; }
 .bpm-linha { display: grid; grid-template-columns: 1fr 1fr 2.4fr 1fr 1fr; gap: 6px; align-items: center; margin: 10px 0; }
 .bpm-linha .botao { min-height: var(--toque); font-size: 15px; padding: 0; }
@@ -121,6 +122,74 @@ html:has(body[data-vez="1"]), body[data-vez="1"] { background: color-mix(in srgb
 
 .nav { max-width: 430px; margin-inline: auto; left: 0; right: 0; }
 
+/* ===================== camada visual (v1.1) ===================== */
+html { background: var(--fundo); }
+body {
+  background:
+    radial-gradient(120% 50% at 50% -10%, color-mix(in srgb, var(--voz) 14%, transparent), transparent 60%),
+    radial-gradient(80% 40% at 110% 30%, color-mix(in srgb, var(--caixa) 8%, transparent), transparent 70%),
+    var(--fundo);
+  background-attachment: fixed;
+}
+h1 { font: 400 34px/1 var(--f-display); letter-spacing: .03em; margin: 8px 0 12px; }
+h2 { font: 400 22px/1.1 var(--f-display); letter-spacing: .04em; color: var(--texto); }
+.painel { border-radius: var(--raio); background: linear-gradient(180deg, color-mix(in srgb, var(--painel) 100%, white 3%), var(--painel)); }
+
+/* botões */
+.botao { transition: transform .08s ease, filter .15s ease; letter-spacing: .01em; }
+.botao:active { transform: scale(.97); }
+.botao:not(.sec) { background: linear-gradient(180deg, color-mix(in srgb, var(--voz) 88%, white), var(--voz)); box-shadow: 0 6px 20px -8px color-mix(in srgb, var(--voz) 70%, transparent); }
+.botao.sec { border: 1px solid var(--linha); }
+.botao.grande { font: 400 30px/1 var(--f-display); letter-spacing: .05em; min-height: 84px; display: grid; place-items: center; }
+.botao.grande small { font: 600 13px system-ui; letter-spacing: 0; opacity: .75; }
+
+/* início */
+.hero { text-align: center; padding: 18px 0 6px; }
+.hero-sobre { margin: 0; text-transform: uppercase; letter-spacing: .2em; font-size: 12px; }
+.logo { font: 400 88px/0.85 var(--f-display); letter-spacing: .04em; margin: 6px 0 0; color: var(--texto); }
+.logo span { display: block; font-size: 30px; letter-spacing: .32em; color: var(--voz); margin-top: 6px; }
+.hero-tempos { display: flex; justify-content: center; gap: 12px; margin: 16px 0 6px; }
+.hero-tempos i { width: 16px; height: 16px; border-radius: 50%; background: var(--bumbo); opacity: .25; animation: pulso 2.6s infinite; }
+.hero-tempos i.caixa { background: var(--caixa); }
+.hero-tempos i:nth-child(2) { animation-delay: .65s; } .hero-tempos i:nth-child(3) { animation-delay: 1.3s; } .hero-tempos i:nth-child(4) { animation-delay: 1.95s; }
+@keyframes pulso { 0%, 20% { opacity: 1; transform: scale(1.35); } 30%, 100% { opacity: .25; transform: scale(1); } }
+.faixa-titulo { font: 400 26px/1 var(--f-display); letter-spacing: .05em; margin: 2px 0 10px; color: var(--texto); }
+.cartao-faixa .barra-metrica { height: 10px; }
+
+/* modos */
+.botao.modo-item { border-left: 4px solid var(--linha); padding: 12px 14px; min-height: 64px; font-size: 18px; }
+.modo-item small { margin-top: 4px; }
+.modo-item.grupo-ouvido { border-left-color: var(--bumbo); }
+.modo-item.grupo-voz { border-left-color: var(--voz); }
+.modo-item.grupo-livre { border-left-color: var(--caixa); }
+
+/* treino */
+.barra-treino h1 { font-size: 28px; margin: 0; }
+.bpm { font: 400 28px/1 var(--f-display); letter-spacing: .04em; color: var(--aviso); }
+.contador { font: 400 26px/1 var(--f-display); letter-spacing: .06em; color: var(--suave); }
+.tempos > i { font: 400 40px/1 var(--f-display); transition: transform .06s ease-out, box-shadow .12s ease-out; }
+.tempos > i.aceso { transform: scale(1.08); box-shadow: 0 0 26px color-mix(in srgb, var(--bumbo) 65%, transparent); }
+.tempos > i.caixa.aceso { box-shadow: 0 0 26px color-mix(in srgb, var(--caixa) 65%, transparent); }
+.rotulo-vez { font: 400 60px/1 var(--f-display); letter-spacing: .06em; }
+.rotulo-vez.fala { text-shadow: 0 0 24px color-mix(in srgb, var(--voz) 45%, transparent); }
+.lienzo { border-radius: 12px; }
+.status-beat { font: 400 30px/1 var(--f-display); letter-spacing: .04em; text-align: center; color: var(--aviso); margin: 4px 0 8px; }
+.palavra { font: 400 24px/1 var(--f-display); letter-spacing: .05em; padding: 0 18px; }
+.palavra.acesa { box-shadow: 0 0 18px color-mix(in srgb, var(--voz) 55%, transparent); }
+
+/* resultado */
+.nota-grande { font: 400 96px/0.9 var(--f-display); color: var(--texto); }
+.titulo-nota small { font: 400 28px var(--f-display); color: var(--suave); letter-spacing: .04em; }
+.estrelas { font-size: 36px; }
+.frase { border-left: 3px solid var(--aviso); padding-left: 12px; }
+
+/* barra de navegação com ícones */
+.nav > a { gap: 2px; font-size: 11px; letter-spacing: .02em; align-content: center; }
+.nav svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nav > a.ativo svg { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--voz) 70%, transparent)); }
+
+@media (prefers-reduced-motion: reduce) { .hero-tempos i { animation: none; opacity: .8; } .tempos > i.aceso { transform: none; } }
+
 </style>
 </head>
 <body>
@@ -139,12 +208,16 @@ html:has(body[data-vez="1"]), body[data-vez="1"] { background: color-mix(in srgb
   <main>
 
     <section id="inicio" aria-labelledby="t-inicio">
-      <h1 id="t-inicio">Dojo de Freestyle</h1>
-      <p>Toca o beat, ouve sua voz e mostra se a rima caiu no 4.</p>
-      <button class="botao grande" id="inicio-dia" type="button">Treino do dia · 10 min</button>
+      <header class="hero">
+        <p class="hero-sobre suave">treino de patada de rima</p>
+        <h1 id="t-inicio" class="logo">DOJO<span>DE FREESTYLE</span></h1>
+        <div class="hero-tempos" aria-hidden="true"><i></i><i class="caixa"></i><i></i><i class="caixa"></i></div>
+        <p class="suave">Toca o beat, ouve sua voz e mostra se a rima caiu no 4.</p>
+      </header>
+      <button class="botao grande" id="inicio-dia" type="button">TREINO DO DIA<small>10 minutos · 4 blocos</small></button>
       <ol class="blocos suave" id="inicio-blocos"></ol>
-      <div class="painel">
-        <p><b id="inicio-faixa">Faixa Branca</b></p>
+      <div class="painel cartao-faixa">
+        <p class="faixa-titulo" id="inicio-faixa">Faixa Branca</p>
         <div class="barra-metrica"><i id="inicio-progresso" style="width:0%"></i></div>
         <p class="suave pequeno" id="inicio-criterio"></p>
         <p>Sequência: <b id="inicio-seq">0 dias</b></p>
@@ -156,6 +229,7 @@ html:has(body[data-vez="1"]), body[data-vez="1"] { background: color-mix(in srgb
         <button class="botao sec" id="inicio-batalha" type="button">Batalha</button>
         <button class="botao sec" id="inicio-livre" type="button">Beat livre</button>
       </div>
+      <button class="botao sec" id="inicio-fora" type="button">Beat do YouTube ou do celular</button>
       <details class="painel ajuda">
         <summary>Como funciona o encaixe</summary>
         <p>Um compasso tem 4 tempos: <b>1 2 3 4</b>. A caixa (laranja) toca no 2 e no 4.</p>
@@ -164,7 +238,7 @@ html:has(body[data-vez="1"]), body[data-vez="1"] { background: color-mix(in srgb
         <p>A 80 BPM um compasso dura 3,0 s; a 90 BPM, 2,67 s; a 100 BPM, 2,4 s. Trap: use a metade do BPM escrito.</p>
         <p>Modos de voz: use <b>fone de ouvido com fio</b>. No PC, a barra de espaço também vale como toque.</p>
       </details>
-      <p class="suave pequeno">versão <b id="versao">2026-11-16 01:51</b> · <a href="#laboratorio">Laboratório do microfone</a></p>
+      <p class="suave pequeno">versão <b id="versao">2026-11-16 02:16</b> · <a href="#laboratorio">Laboratório do microfone</a></p>
     </section>
 
     <section id="modos" hidden aria-labelledby="t-modos">
@@ -370,15 +444,15 @@ html:has(body[data-vez="1"]), body[data-vez="1"] { background: color-mix(in srgb
   </main>
 
   <nav class="nav" aria-label="Principal">
-    <a href="#inicio">Início</a>
-    <a href="#modos">Modos</a>
-    <a href="#evolucao">Evolução</a>
-    <a href="#caderno">Caderno</a>
-    <a href="#ajustes">Ajustes</a>
+    <a href="#inicio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Início</a>
+    <a href="#modos"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Modos</a>
+    <a href="#evolucao"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18"/><path d="M5 16l4-5 4 3 6-8"/></svg>Evolução</a>
+    <a href="#caderno"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>Caderno</a>
+    <a href="#ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Ajustes</a>
   </nav>
 
   <script>
-window.__DOJO_WORKLET_SRC__ = "(function () {\n'use strict';\nconst __f = {\n\"mic/onset-worklet.js\": function (__r) {\n// onset-worklet.js — AudioWorkletProcessor que roda o detector na thread de áudio.\n// Carregar com: await ctx.audioWorklet.addModule('js/mic/onset-worklet.js')\n//\n// IMPORTANTE: o nó precisa estar ligado até o destination (passando por um GainNode com\n// gain 0), senão alguns navegadores deixam de chamar process(). Ver captura.js.\nconst { DetectorOnset } = __r(\"mic/onset-core.js\");\n\nclass DetectorOnsetProcessor extends AudioWorkletProcessor {\n  constructor(opcoes) {\n    super();\n    this.det = new DetectorOnset({ ...(opcoes.processorOptions ?? {}), sampleRate }); // `sampleRate` é global do worklet\n    this.contador = 0;\n    this.port.onmessage = (e) => { if (e.data?.tipo === 'configurar') this.det.configurar(e.data.valores); };\n  }\n\n  process(entradas) {\n    const x = entradas[0]?.[0];\n    if (!x) return true;\n    const r = this.det.processar(x, currentTime); // `currentTime` = relógio do AudioContext, o mesmo do beat\n    if (r.onset) this.port.postMessage({ tipo: 'onset', tempo: r.onset.tempo, forca: r.onset.forca });\n    if (++this.contador % 8 === 0) this.port.postMessage({ tipo: 'nivel', valor: r.nivel });\n    return true;\n  }\n}\n\nregisterProcessor('detector-onset', DetectorOnsetProcessor);\n\nreturn {  };\n},\n\"mic/onset-core.js\": function (__r) {\n// onset-core.js — detector de início de sílaba. PURO: processa blocos de amostras (Float32Array)\n// e diz quando começou uma sílaba. Roda dentro do AudioWorklet (onset-worklet.js) e no Node (testes).\n//\n// Ideia: uma sílaba nova é uma SUBIDA rápida de volume (em dB), não um volume alto. Comparar com\n// uma média lenta (versão v1 do plano) perdia 58% das sílabas na fala rápida; medir a subida\n// numa janela de 30 ms acerta ≥ 98% na fala normal, sem falsos positivos (testes/onset.test.mjs).\nconst { CONFIG } = __r(\"config.js\");\n\nclass DetectorOnset {\n  // opc: qualquer campo de CONFIG.onset, mais sampleRate (padrão 48000) e blocoAmostras (padrão 128)\n  constructor(opc = {}) {\n    this.sampleRate = opc.sampleRate ?? 48000;\n    this.bloco = opc.blocoAmostras ?? 128;\n    this.configurar({ ...CONFIG.onset, ...opc });\n    this.reiniciar();\n  }\n\n  configurar(c) {\n    for (const k of ['piso', 'alphaRapido', 'janelaS', 'subidaDb', 'quedaDb', 'refratarioS']) if (c[k] !== undefined) this[k] = c[k];\n    const m = Math.max(2, Math.round((this.janelaS * this.sampleRate) / this.bloco));\n    if (m !== this.M) { this.M = m; this.hist = new Array(m).fill(-120); this.k = 0; }\n  }\n\n  reiniciar() {\n    this.rapido = 0;\n    this.M = undefined; this.configurar({});\n    this.ultimo = -Infinity; this.armado = true; this.pico = -120;\n  }\n\n  // amostras: Float32Array de 1 bloco. tempo: instante (segundos) do INÍCIO do bloco.\n  // Devolve { onset: {tempo, forca} | null, nivel: volume suavizado }.\n  processar(amostras, tempo) {\n    let soma = 0;\n    for (let i = 0; i < amostras.length; i++) soma += amostras[i] * amostras[i];\n    const rms = Math.sqrt(soma / amostras.length);\n    this.rapido += (rms - this.rapido) * this.alphaRapido;\n    const db = 20 * Math.log10(this.rapido + 1e-6);\n    this.hist[this.k++ % this.M] = db;\n    let base = Infinity;\n    for (let i = 0; i < this.M; i++) if (this.hist[i] < base) base = this.hist[i];\n\n    let onset = null;\n    if (this.armado) {\n      if (this.rapido > this.piso && db - base >= this.subidaDb && tempo - this.ultimo > this.refratarioS) {\n        onset = { tempo, forca: this.rapido };\n        this.ultimo = tempo; this.armado = false; this.pico = db;\n      }\n    } else {\n      if (db > this.pico) this.pico = db;\n      if (db < this.pico - this.quedaDb) this.armado = true; // o volume já caiu: pronto para a próxima sílaba\n    }\n    return { onset, nivel: this.rapido };\n  }\n}\n\n// Piso de volume a partir do ruído de fundo medido em ~1 s de silêncio (média do `nivel`).\nfunction pisoParaRuido(rmsRuido) {\n  const { ruidoFator, pisoMin, pisoMax } = CONFIG.onset;\n  return Math.min(pisoMax, Math.max(pisoMin, rmsRuido * ruidoFator));\n}\n\nreturn { get DetectorOnset() { return DetectorOnset; }, get pisoParaRuido() { return pisoParaRuido; } };\n},\n\"config.js\": function (__r) {\n// config.js — TODOS os números ajustáveis do app ficam aqui. Nenhum outro arquivo\n// deve ter limiar, peso ou tempo \"solto\" no código. Para ajustar o app depois de\n// testar com voz real, só se muda este arquivo.\n\nconst CONFIG = {\n  PASSOS: 16, // passos por compasso (semicolcheias). Passos 0, 4, 8 e 12 = tempos 1, 2, 3 e 4.\n\n  agendador: {\n    intervaloMs: 25,   // de quanto em quanto tempo o relógio acorda\n    antecedenciaS: 0.12, // quanto à frente ele agenda os sons\n    inicioFolgaS: 0.15,  // folga entre apertar \"começar\" e o primeiro passo\n  },\n\n  // Detector de início de sílaba (mic/onset-core.js). Valores validados só com fala\n  // sintética: AJUSTAR com voz real na tela Laboratório.\n  onset: {\n    piso: 0.015,       // volume mínimo (RMS 0..1). A calibração troca por 3x o ruído de fundo.\n    pisoMin: 0.008,\n    pisoMax: 0.05,\n    ruidoFator: 3,\n    alphaRapido: 0.35, // suavização do envelope rápido (por bloco de 128 amostras)\n    janelaS: 0.03,     // janela para medir a subida\n    subidaDb: 5,       // subida mínima em dB dentro da janela para contar uma sílaba\n    quedaDb: 3,        // queda em dB desde o pico para \"rearmar\" o detector\n    refratarioS: 0.09, // tempo mínimo entre duas sílabas (limita a ~11 sílabas por segundo)\n  },\n\n  pontuacao: {\n    pesos: { fecho: 0.35, grade: 0.40, densidade: 0.10, respiro: 0.15 }, // calibrados por simulação (testes/pontuacao.test.mjs): aleatório fica < 50, bom > 85\n    fecho: {\n      ultimas: 2,        // sem saber a palavra, só os 2 últimos sons podem ser \"a rima\" (oxítona ou paroxítona, ~95% das palavras)\n      cravouPassos: 0.5, // até 0,5 passo do tempo 4 = 100 pontos\n      pertoPassos: 1.0,  // até 1 passo = ptsPerto\n      ptsPerto: 60,\n    },\n    grade: {\n      oitavas:       { tol: 0.4,  acaso: 0.4 }, // cai perto de um passo par; 40% é o que o acaso daria\n      semicolcheias: { tol: 0.25, acaso: 0.5 }, // cai perto de qualquer passo; 50% é o acaso\n      otimo: 0.85,       // fração de acertos que vale 100 pontos\n    },\n    densidade: { faixaIdeal: [5, 10], faixaAvancada: [6, 12], penalidadePorSilaba: 15 },\n    respiro: { gapCheio: 1.5, gapZero: 0.5 }, // passos livres no fim do compasso\n    estrelas: [85, 65, 40], // 3, 2 e 1 estrela\n    toque: { acertoMs: 70, quaseMs: 130 },\n  },\n\n  feedback: {\n    foraTempoFecho: 0.5,  // fração de compassos com fecho 0 que dispara a dica de rima\n    ultimoTarde: 14.5,    // último som depois disso = rima tarde\n    ultimoCedo: 11.5,     // último som antes disso = rima cedo\n    viesMs: 60,           // adiantado/atrasado médio acima disso gera dica\n    viesCalibracaoMs: 120, // 3 rodadas seguidas acima disso = recalibrar\n    respiroBaixo: 50,\n    notaBoa: 85,\n  },\n\n  treino: {\n    bpmInicial: 80, bpmMin: 66, bpmMax: 110, passoBpm: 4,\n    notaSobe: 85, notaDesce: 50,\n    aquecimentoMenosBpm: 8, // aquecimento do treino do dia: 8 BPM abaixo\n    blocosMin: [2, 5, 2, 1], // aquecimento, foco, ponto fraco, solto (minutos)\n  },\n\n  // Microfone (mic/captura.js e mic/calibracao.js, seção 4 da spec)\n  microfone: {\n    silencioPisoS: 1.0,     // silêncio medido para achar o piso\n    ruidoAlto: 0.02,        // acima disso: \"ambiente barulhento\"\n    eco: { cliques: 8, intervaloS: 0.9, janelaAntesS: 0.02, janelaDepoisS: 0.5, minOuvidos: 4, desvioMaxMs: 25 },\n    bluetoothMs: 250,       // micMs acima disso: aviso de fone Bluetooth\n  },\n\n  // Regras dos modos de voz (seção 7.2)\n  modosVoz: {\n    pegaFala: 2, pegaCiclos: 4,          // modo 6: fala 2, escuta 2, 4 ciclos\n    rimaNo4Compassos: 8,                 // modo 5\n    alvoCiclos: 2, alvoDicaPontos: 20,   // modo 7\n    quatroCiclos: 2,                     // modo 8\n    notaNaoRimou: 39,                    // modo 7: nota máxima quando a rima não passou\n    corVerde: 0.25, corAmarela: 0.5,     // cor do traço da voz: distância ao pulso (passos)\n  },\n};\n\nreturn { get CONFIG() { return CONFIG; } };\n}\n};\nconst __c = {};\nfunction __r(id) { if (!(id in __c)) { if (!__f[id]) throw new Error('módulo não encontrado: ' + id); __c[id] = __f[id](__r); } return __c[id]; }\n__r(\"mic/onset-worklet.js\");\n})();\n";
+window.__DOJO_WORKLET_SRC__ = "(function () {\n'use strict';\nconst __f = {\n\"mic/worklets.js\": function (__r) {\n// worklets.js — carrega os dois processadores de uma vez (um addModule só):\n// o detector de sílabas e o gravador de amostras.\n__r(\"mic/onset-worklet.js\");\n__r(\"mic/pcm-worklet.js\");\n\nreturn {  };\n},\n\"mic/onset-worklet.js\": function (__r) {\n// onset-worklet.js — AudioWorkletProcessor que roda o detector na thread de áudio.\n// Carregar com: await ctx.audioWorklet.addModule('js/mic/onset-worklet.js')\n//\n// IMPORTANTE: o nó precisa estar ligado até o destination (passando por um GainNode com\n// gain 0), senão alguns navegadores deixam de chamar process(). Ver captura.js.\nconst { DetectorOnset } = __r(\"mic/onset-core.js\");\n\nclass DetectorOnsetProcessor extends AudioWorkletProcessor {\n  constructor(opcoes) {\n    super();\n    this.det = new DetectorOnset({ ...(opcoes.processorOptions ?? {}), sampleRate }); // `sampleRate` é global do worklet\n    this.contador = 0;\n    this.port.onmessage = (e) => { if (e.data?.tipo === 'configurar') this.det.configurar(e.data.valores); };\n  }\n\n  process(entradas) {\n    const x = entradas[0]?.[0];\n    if (!x) return true;\n    const r = this.det.processar(x, currentTime); // `currentTime` = relógio do AudioContext, o mesmo do beat\n    if (r.onset) this.port.postMessage({ tipo: 'onset', tempo: r.onset.tempo, forca: r.onset.forca });\n    if (++this.contador % 8 === 0) this.port.postMessage({ tipo: 'nivel', valor: r.nivel });\n    return true;\n  }\n}\n\nregisterProcessor('detector-onset', DetectorOnsetProcessor);\n\nreturn {  };\n},\n\"mic/pcm-worklet.js\": function (__r) {\n// pcm-worklet.js — grava as amostras do microfone com o instante exato (relógio do AudioContext).\n// Manda pedaços de 1024 amostras: { tipo:'pcm', tempo (início do pedaço), amostras }.\n// Só grava enquanto estiver ligado ({ tipo:'gravar', ligado:true }).\nclass GravadorPcm extends AudioWorkletProcessor {\n  constructor() {\n    super();\n    this.ligado = false;\n    this.buf = new Float32Array(1024);\n    this.n = 0;\n    this.t0 = 0;\n    this.port.onmessage = (e) => { if (e.data?.tipo === 'gravar') { this.ligado = e.data.ligado; this.n = 0; } };\n  }\n\n  process(entradas) {\n    const x = entradas[0]?.[0];\n    if (!x || !this.ligado) return true;\n    for (let i = 0; i < x.length; i++) {\n      if (this.n === 0) this.t0 = currentTime + i / sampleRate;\n      this.buf[this.n++] = x[i];\n      if (this.n === this.buf.length) {\n        this.port.postMessage({ tipo: 'pcm', tempo: this.t0, amostras: this.buf.slice() });\n        this.n = 0;\n      }\n    }\n    return true;\n  }\n}\n\nregisterProcessor('gravador-pcm', GravadorPcm);\n\nreturn {  };\n},\n\"mic/onset-core.js\": function (__r) {\n// onset-core.js — detector de início de sílaba. PURO: processa blocos de amostras (Float32Array)\n// e diz quando começou uma sílaba. Roda dentro do AudioWorklet (onset-worklet.js) e no Node (testes).\n//\n// Ideia: uma sílaba nova é uma SUBIDA rápida de volume (em dB), não um volume alto. Comparar com\n// uma média lenta (versão v1 do plano) perdia 58% das sílabas na fala rápida; medir a subida\n// numa janela de 30 ms acerta ≥ 98% na fala normal, sem falsos positivos (testes/onset.test.mjs).\nconst { CONFIG } = __r(\"config.js\");\n\nclass DetectorOnset {\n  // opc: qualquer campo de CONFIG.onset, mais sampleRate (padrão 48000) e blocoAmostras (padrão 128)\n  constructor(opc = {}) {\n    this.sampleRate = opc.sampleRate ?? 48000;\n    this.bloco = opc.blocoAmostras ?? 128;\n    this.configurar({ ...CONFIG.onset, ...opc });\n    this.reiniciar();\n  }\n\n  configurar(c) {\n    for (const k of ['piso', 'alphaRapido', 'janelaS', 'subidaDb', 'quedaDb', 'refratarioS']) if (c[k] !== undefined) this[k] = c[k];\n    const m = Math.max(2, Math.round((this.janelaS * this.sampleRate) / this.bloco));\n    if (m !== this.M) { this.M = m; this.hist = new Array(m).fill(-120); this.k = 0; }\n  }\n\n  reiniciar() {\n    this.rapido = 0;\n    this.M = undefined; this.configurar({});\n    this.ultimo = -Infinity; this.armado = true; this.pico = -120;\n  }\n\n  // amostras: Float32Array de 1 bloco. tempo: instante (segundos) do INÍCIO do bloco.\n  // Devolve { onset: {tempo, forca} | null, nivel: volume suavizado }.\n  processar(amostras, tempo) {\n    let soma = 0;\n    for (let i = 0; i < amostras.length; i++) soma += amostras[i] * amostras[i];\n    const rms = Math.sqrt(soma / amostras.length);\n    this.rapido += (rms - this.rapido) * this.alphaRapido;\n    const db = 20 * Math.log10(this.rapido + 1e-6);\n    this.hist[this.k++ % this.M] = db;\n    let base = Infinity;\n    for (let i = 0; i < this.M; i++) if (this.hist[i] < base) base = this.hist[i];\n\n    let onset = null;\n    if (this.armado) {\n      if (this.rapido > this.piso && db - base >= this.subidaDb && tempo - this.ultimo > this.refratarioS) {\n        onset = { tempo, forca: this.rapido };\n        this.ultimo = tempo; this.armado = false; this.pico = db;\n      }\n    } else {\n      if (db > this.pico) this.pico = db;\n      if (db < this.pico - this.quedaDb) this.armado = true; // o volume já caiu: pronto para a próxima sílaba\n    }\n    return { onset, nivel: this.rapido };\n  }\n}\n\n// Piso de volume a partir do ruído de fundo medido em ~1 s de silêncio (média do `nivel`).\nfunction pisoParaRuido(rmsRuido) {\n  const { ruidoFator, pisoMin, pisoMax } = CONFIG.onset;\n  return Math.min(pisoMax, Math.max(pisoMin, rmsRuido * ruidoFator));\n}\n\nreturn { get DetectorOnset() { return DetectorOnset; }, get pisoParaRuido() { return pisoParaRuido; } };\n},\n\"config.js\": function (__r) {\n// config.js — TODOS os números ajustáveis do app ficam aqui. Nenhum outro arquivo\n// deve ter limiar, peso ou tempo \"solto\" no código. Para ajustar o app depois de\n// testar com voz real, só se muda este arquivo.\n\nconst CONFIG = {\n  PASSOS: 16, // passos por compasso (semicolcheias). Passos 0, 4, 8 e 12 = tempos 1, 2, 3 e 4.\n\n  agendador: {\n    intervaloMs: 25,   // de quanto em quanto tempo o relógio acorda\n    antecedenciaS: 0.12, // quanto à frente ele agenda os sons\n    inicioFolgaS: 0.15,  // folga entre apertar \"começar\" e o primeiro passo\n  },\n\n  // Detector de início de sílaba (mic/onset-core.js). Valores validados só com fala\n  // sintética: AJUSTAR com voz real na tela Laboratório.\n  onset: {\n    piso: 0.015,       // volume mínimo (RMS 0..1). A calibração troca por 3x o ruído de fundo.\n    pisoMin: 0.008,\n    pisoMax: 0.05,\n    ruidoFator: 3,\n    alphaRapido: 0.35, // suavização do envelope rápido (por bloco de 128 amostras)\n    janelaS: 0.03,     // janela para medir a subida\n    subidaDb: 5,       // subida mínima em dB dentro da janela para contar uma sílaba\n    quedaDb: 3,        // queda em dB desde o pico para \"rearmar\" o detector\n    refratarioS: 0.09, // tempo mínimo entre duas sílabas (limita a ~11 sílabas por segundo)\n  },\n\n  pontuacao: {\n    pesos: { fecho: 0.35, grade: 0.40, densidade: 0.10, respiro: 0.15 }, // calibrados por simulação (testes/pontuacao.test.mjs): aleatório fica < 50, bom > 85\n    fecho: {\n      ultimas: 2,        // sem saber a palavra, só os 2 últimos sons podem ser \"a rima\" (oxítona ou paroxítona, ~95% das palavras)\n      cravouPassos: 0.5, // até 0,5 passo do tempo 4 = 100 pontos\n      pertoPassos: 1.0,  // até 1 passo = ptsPerto\n      ptsPerto: 60,\n    },\n    grade: {\n      oitavas:       { tol: 0.4,  acaso: 0.4 }, // cai perto de um passo par; 40% é o que o acaso daria\n      semicolcheias: { tol: 0.25, acaso: 0.5 }, // cai perto de qualquer passo; 50% é o acaso\n      otimo: 0.85,       // fração de acertos que vale 100 pontos\n    },\n    densidade: { faixaIdeal: [5, 10], faixaAvancada: [6, 12], penalidadePorSilaba: 15 },\n    respiro: { gapCheio: 1.5, gapZero: 0.5 }, // passos livres no fim do compasso\n    estrelas: [85, 65, 40], // 3, 2 e 1 estrela\n    toque: { acertoMs: 70, quaseMs: 130 },\n  },\n\n  feedback: {\n    foraTempoFecho: 0.5,  // fração de compassos com fecho 0 que dispara a dica de rima\n    ultimoTarde: 14.5,    // último som depois disso = rima tarde\n    ultimoCedo: 11.5,     // último som antes disso = rima cedo\n    viesMs: 60,           // adiantado/atrasado médio acima disso gera dica\n    viesCalibracaoMs: 120, // 3 rodadas seguidas acima disso = recalibrar\n    respiroBaixo: 50,\n    notaBoa: 85,\n  },\n\n  treino: {\n    bpmInicial: 80, bpmMin: 66, bpmMax: 110, passoBpm: 4,\n    notaSobe: 85, notaDesce: 50,\n    aquecimentoMenosBpm: 8, // aquecimento do treino do dia: 8 BPM abaixo\n    blocosMin: [2, 5, 2, 1], // aquecimento, foco, ponto fraco, solto (minutos)\n  },\n\n  // Microfone (mic/captura.js e mic/calibracao.js, seção 4 da spec)\n  microfone: {\n    silencioPisoS: 1.0,     // silêncio medido para achar o piso\n    ruidoAlto: 0.02,        // acima disso: \"ambiente barulhento\"\n    eco: { cliques: 10, intervaloS: 0.9, janelaAntesS: 0.02, janelaDepoisS: 0.5, minOuvidos: 4, desvioMaxMs: 25 },\n    bluetoothMs: 250,       // micMs acima disso: aviso de fone Bluetooth\n  },\n\n  // Regras dos modos de voz (seção 7.2)\n  modosVoz: {\n    pegaFala: 2, pegaCiclos: 4,          // modo 6: fala 2, escuta 2, 4 ciclos\n    rimaNo4Compassos: 8,                 // modo 5\n    alvoCiclos: 2, alvoDicaPontos: 20,   // modo 7\n    quatroCiclos: 2,                     // modo 8\n    notaNaoRimou: 39,                    // modo 7: nota máxima quando a rima não passou\n    corVerde: 0.25, corAmarela: 0.5,     // cor do traço da voz: distância ao pulso (passos)\n  },\n};\n\nreturn { get CONFIG() { return CONFIG; } };\n}\n};\nconst __c = {};\nfunction __r(id) { if (!(id in __c)) { if (!__f[id]) throw new Error('módulo não encontrado: ' + id); __c[id] = __f[id](__r); } return __c[id]; }\n__r(\"mic/worklets.js\");\n})();\n";
 </script>
 <script>
 (function () {
@@ -624,14 +698,30 @@ async function ligarMic() {
   return { s, cap };
 }
 
+// Eco 3 vezes seguidas; usa a medição do meio (uma medição sozinha pode variar ~50 ms no Android).
+async function ecoTresVezes(ctx, cap) {
+  const medidas = [];
+  let ultimo = null;
+  for (let i = 1; i <= 3; i++) {
+    msgMic(`Medição ${i} de 3: silêncio, sem fone, volume alto, celular parado…`);
+    ultimo = await calibrarEco(ctx, cap);
+    if (ultimo.ok) medidas.push(ultimo.micMs);
+  }
+  if (medidas.length < 2) return ultimo.ok ? { ...ultimo, ok: false, motivo: 'só uma medição valeu: repita' } : ultimo;
+  const ord = [...medidas].sort((a, b) => a - b);
+  const micMs = ord[Math.floor((ord.length - 1) / 2)];
+  const espalhado = ord[ord.length - 1] - ord[0];
+  return { ok: true, micMs, desvioMs: Math.round(espalhado / 2), ouvidos: `${medidas.length} de 3 medições: ${medidas.join(', ')} ms` };
+}
+
 // Roda uma calibração de microfone (eco ou voz) com mensagens e grava o resultado.
 async function calibrarMic(metodo) {
   const botoes = [$('aj-eco'), $('aj-calvoz')];
   botoes.forEach((b) => { b.disabled = true; });
   try {
     const { s, cap } = await ligarMic();
-    msgMic(metodo === 'eco' ? 'Tocando 8 estalos. Silêncio, sem fone, volume alto, celular parado…' : 'Fale "pá" em cima de cada clique (12 cliques).');
-    const r = metodo === 'eco' ? await calibrarEco(s.ctx, cap) : await calibrarVoz(s.ctx, s.bateria, cap);
+    if (metodo !== 'eco') msgMic('Fale "pá" em cima de cada clique (12 cliques).');
+    const r = metodo === 'eco' ? await ecoTresVezes(s.ctx, cap) : await calibrarVoz(s.ctx, s.bateria, cap);
     s.bateria.definirVolumeClique(estado().ajustes.volClique);
     if (r.ok) {
       alterarEstado((d) => { d.calibracao = { ...d.calibracao, micMs: r.micMs, metodo, data: hoje() }; });
@@ -726,7 +816,7 @@ const modoAtual = () => MODOS[modoId];
 const bpmAtual = () => bpmLocal ?? opcoes.bpm ?? bpmDoModo(estado(), modoId);
 
 function avisar(t) { const e = $('tr-pausado'); e.hidden = !t; e.textContent = t || ''; }
-function mostrarBpm() { $('tr-bpm').textContent = `${c?.bpm ?? bpmAtual()} BPM`; }
+function mostrarBpm() { $('tr-bpm').textContent = `${+(c?.bpm ?? bpmAtual()).toFixed(1)} BPM`; }
 
 function garantir() {
   const s = garantirSessao();
@@ -795,8 +885,8 @@ function comecar(s, m, captura) {
   const ctx = criarContexto(s, m, captura);
   c = ctx;
   visual.iniciar(m, ctx);
-  m.iniciar(ctx);
-  s.motor.iniciar(ctx.bpm);
+  if (m.iniciar(ctx) === false) { visual.parar(); rec?.parar(); return; } // o modo recusou (falta preparar algo)
+  s.motor.iniciar(ctx.bpm, ctx.inicioRelogio);
   rodando = true;
   $('tr-iniciar').textContent = 'Parar';
   mostrarBpm();
@@ -918,9 +1008,9 @@ const { aoEntrar } = __r("ui/telas.js");
 const { el } = __r("ui/dom.js");
 
 const GRUPOS = [
-  ['Ouvido (toque na tela, sem microfone)', ['ache-o-1', 'que-tempo', 'preveja-mudanca', 'beat-fantasma']],
-  ['Voz (microfone + fone de ouvido)', ['rima-no-4', 'pega-o-beat', 'palavra-alvo', 'quatro-palavras']],
-  ['Livre e com amigos', ['batalha', 'livre', 'metronomo']],
+  ['Ouvido · toque na tela', 'ouvido', ['ache-o-1', 'que-tempo', 'preveja-mudanca', 'beat-fantasma']],
+  ['Voz · microfone e fone', 'voz', ['rima-no-4', 'pega-o-beat', 'palavra-alvo', 'quatro-palavras']],
+  ['Livre e com amigos', 'livre', ['beat-fora', 'batalha', 'livre', 'metronomo']],
 ];
 
 function iniciarModosUi(abrir) {
@@ -928,12 +1018,12 @@ function iniciarModosUi(abrir) {
   function desenhar() {
     const d = estado();
     const porId = Object.fromEntries(LISTA.map((m) => [m.id, m]));
-    lista.replaceChildren(...GRUPOS.flatMap(([titulo, ids]) => [
+    lista.replaceChildren(...GRUPOS.flatMap(([titulo, grupo, ids]) => [
       el('h2', { textContent: titulo }),
       ...ids.map((id) => {
         const m = porId[id], info = infoModo(d, id);
-        const sub = m.semNota ? DESCRICAO[id] : `${DESCRICAO[id]} · ${d.ajustes.bpmTravado ?? info.bpm} BPM · melhor ${info.melhorNota}`;
-        const b = el('button', { type: 'button', className: 'botao sec modo-item', textContent: m.nome }, [el('small', { textContent: sub })]);
+        const sub = m.semNota ? DESCRICAO[id] : `${DESCRICAO[id]} · ${d.ajustes.bpmTravado ?? info.bpm} BPM${info.melhorNota ? ` · melhor nota ${info.melhorNota}` : ""}`;
+        const b = el('button', { type: 'button', className: `botao sec modo-item grupo-${grupo}`, textContent: m.nome }, [el('small', { textContent: sub })]);
         b.addEventListener('click', () => abrir(id));
         return b;
       }),
@@ -1060,6 +1150,7 @@ function iniciarInicio({ treinoDoDia, abrir }) {
   $('inicio-dia').addEventListener('click', treinoDoDia);
   $('inicio-batalha').addEventListener('click', () => abrir('batalha'));
   $('inicio-livre').addEventListener('click', () => abrir('livre'));
+  $('inicio-fora').addEventListener('click', () => abrir('beat-fora'));
   aoEntrar('inicio', desenhar);
   desenhar();
 }
@@ -1293,7 +1384,7 @@ const CONFIG = {
   microfone: {
     silencioPisoS: 1.0,     // silêncio medido para achar o piso
     ruidoAlto: 0.02,        // acima disso: "ambiente barulhento"
-    eco: { cliques: 8, intervaloS: 0.9, janelaAntesS: 0.02, janelaDepoisS: 0.5, minOuvidos: 4, desvioMaxMs: 25 },
+    eco: { cliques: 10, intervaloS: 0.9, janelaAntesS: 0.02, janelaDepoisS: 0.5, minOuvidos: 4, desvioMaxMs: 25 },
     bluetoothMs: 250,       // micMs acima disso: aviso de fone Bluetooth
   },
 
@@ -1844,8 +1935,9 @@ const { modo: quatroPalavras } = __r("treino/modos/quatro-palavras.js");
 const { modo: batalha } = __r("treino/modos/batalha.js");
 const { modo: livre } = __r("treino/modos/livre.js");
 const { modo: metronomo } = __r("treino/modos/metronomo.js");
+const { modo: beatFora } = __r("treino/modos/beat-fora.js");
 
-const LISTA = [acheO1, queTempo, preveja, beatFantasma, rimaNo4, pegaOBeat, palavraAlvo, quatroPalavras, batalha, livre, metronomo];
+const LISTA = [acheO1, queTempo, preveja, beatFantasma, rimaNo4, pegaOBeat, palavraAlvo, quatroPalavras, batalha, livre, beatFora, metronomo];
 const MODOS = Object.fromEntries(LISTA.map((m) => [m.id, m]));
 
 // Descrição curta de cada modo (tela Modos).
@@ -1860,6 +1952,7 @@ const DESCRICAO = {
   'quatro-palavras': 'Encaixe as palavras da tela no tempo.',
   'batalha': 'Dois jogadores, um celular, caixa de som.',
   'livre': 'Beat rolando, sem nota. Grave e salve rimas.',
+  'beat-fora': 'Beat do YouTube ou do celular: o app acha o BPM e conta junto.',
   'metronomo': 'Só o clique, para conferir o som.',
 };
 
@@ -1959,6 +2052,7 @@ function criarGrade(canvas) {
   return {
     // Mostra bumbo e caixa do compasso `beatN` (0 a 31) do beat.
     desenharBeat(beat, beatN) {
+      if (!beat || beat.externo) { topo = []; desenhar(); return; }
       topo = eventosDoCompasso(beat, beatN)
         .filter((e) => e.instrumento === 'bumbo' || e.instrumento === 'caixa')
         .map((e) => ({ passo: e.passo, instrumento: e.instrumento }));
@@ -2181,7 +2275,10 @@ function criarVisual({ s, circulos, grade, curva }) {
       if (k !== 0) return;
       const beat = s.motor.beatAtual;
       const esconder = m.esconderContador || c.esconderContador;
-      if (beat) {
+      if (beat?.externo) {
+        if (!esconder) visual.contador(`Compasso ${((compasso - 1) % 8) + 1} de 8`);
+        grade.desenharBeat(beat, 0);
+      } else if (beat) {
         const info = secaoDoCompasso(beat, compasso - 1);
         if (!esconder) {
           visual.contador(`Compasso ${info.compassoNaSecao + 1} de ${info.tamanho}`);
@@ -2278,7 +2375,7 @@ function mostrarResultado(info, textoProximo) {
   if (!info.semNota) {
     $('res-estrelas').textContent = '★'.repeat(info.estrelas) + '☆'.repeat(3 - info.estrelas);
     $('res-estrelas').setAttribute('aria-label', `${info.estrelas} de 3 estrelas`);
-    $('res-nota').textContent = `Nota ${Math.round(info.nota)} de 100`;
+    $('res-nota').replaceChildren(el('span', { className: 'nota-grande', textContent: String(Math.round(info.nota)) }), el('small', { textContent: ' / 100' }));
   }
   $('res-principal').textContent = textoPrincipal(info);
 
@@ -2591,9 +2688,10 @@ function criarRelogio(ctx, opc = {}) {
   }
 
   return {
-    iniciar(bpm) {
+    // inicio (opcional): instante do primeiro passo, para alinhar com um beat de fora.
+    iniciar(bpm, inicio) {
       this.parar();
-      linha = criarLinhaDoTempo(ctx.currentTime + inicioFolgaS, bpm);
+      linha = criarLinhaDoTempo(Math.max(inicio ?? 0, ctx.currentTime + inicioFolgaS), bpm);
       proxCompasso = 0; proxPasso = 0; bpmPendente = null;
       timer = setInterval(agendar, intervaloMs);
       agendar();
@@ -2715,6 +2813,7 @@ function criarBateria(ctx) {
 
   return {
     saida: compressor,
+    entradaBeat: ganhoBeat, // um beat de arquivo entra aqui (mesmo volume do beat sintetizado)
 
     // instrumento: 'bumbo' | 'caixa' | 'chimbal' | 'baixo' | 'acorde'
     // opc: { volume, nota, aberto, rolo, passoS }
@@ -2780,8 +2879,8 @@ function criarMotor({ ctx, relogio, bateria }) {
     const beatN = compasso - 1;
 
     if (beat === null || contagem) {
-      if (passo % 4 === 0) bateria.clique(tempo, passo === 0);
-    } else {
+      if (passo % 4 === 0 && !beat?.semContagem) bateria.clique(tempo, passo === 0);
+    } else if (!beat.externo) { // beat externo (arquivo ou caixa de som): o motor só conta
       if (cacheN !== beatN) { cacheEventos = eventosDoCompasso(beat, beatN); cacheN = beatN; }
       const passoS = duracaoPasso(relogio.bpmDoCompasso(compasso));
       for (const e of cacheEventos) {
@@ -2801,9 +2900,9 @@ function criarMotor({ ctx, relogio, bateria }) {
       relogio.definirSwing(novo?.swing ?? 0);
     },
 
-    iniciar(bpm) {
+    iniciar(bpm, inicio) {
       if (!desligarRelogio) desligarRelogio = relogio.aoPasso(aoAgendar);
-      relogio.iniciar(bpm);
+      relogio.iniciar(bpm, inicio);
     },
 
     parar() {
@@ -2875,7 +2974,7 @@ let moduloCarregado = null; // Promise: o worklet só é carregado uma vez por A
 function urlDoWorklet() {
   const src = globalThis.__DOJO_WORKLET_SRC__;
   if (src) return URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
-  return 'js/mic/onset-worklet.js'; // relativo ao index.html da pasta app/
+  return 'js/mic/worklets.js'; // relativo ao index.html da pasta app/
 }
 
 function criarCaptura(ctx) {
@@ -2927,6 +3026,31 @@ function criarCaptura(ctx) {
 
     aoOnset(fn) { ouvOnset.add(fn); return () => ouvOnset.delete(fn); },
     aoNivel(fn) { ouvNivel.add(fn); return () => ouvNivel.delete(fn); },
+
+    // Grava `segundos` de áudio do microfone. Devolve { amostras, sampleRate, inicio } (inicio no relógio do áudio).
+    async gravar(segundos) {
+      if (!fonte) throw new Error('microfone desligado');
+      const rec = new AudioWorkletNode(ctx, 'gravador-pcm', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1] });
+      const zero = ctx.createGain(); zero.gain.value = 0;
+      fonte.connect(rec); rec.connect(zero); zero.connect(ctx.destination);
+      const pedacos = [];
+      const total = Math.round(segundos * ctx.sampleRate);
+      let n = 0;
+      await new Promise((ok) => {
+        rec.port.onmessage = (e) => {
+          pedacos.push(e.data);
+          n += e.data.amostras.length;
+          if (n >= total) ok();
+        };
+        rec.port.postMessage({ tipo: 'gravar', ligado: true });
+      });
+      rec.port.postMessage({ tipo: 'gravar', ligado: false });
+      try { fonte.disconnect(rec); rec.disconnect(); zero.disconnect(); } catch { /* já desligado */ }
+      const amostras = new Float32Array(n);
+      let i = 0;
+      for (const p of pedacos) { amostras.set(p.amostras, i); i += p.amostras.length; }
+      return { amostras, sampleRate: ctx.sampleRate, inicio: pedacos[0].tempo };
+    },
 
     nomeEntrada() { return fluxo?.getAudioTracks()[0]?.label ?? ''; },
 
@@ -3333,6 +3457,7 @@ return { get modo() { return modo; } };
 "treino/modos/pega-o-beat.js": function (__r) {
 // pega-o-beat.js — modo 6 "Pega o beat" (spec 7.2). Fala 1 frase por compasso: fala 2, escuta 2,
 // 4 ciclos (faixa azul em diante: fala 8, escuta 8, 1 ciclo). Nota completa (6.1).
+// montarFalaEscuta também é usada pelo "Beat de fora" (beat de arquivo).
 const { CONFIG } = __r("config.js");
 const { gerarFeedback } = __r("treino/feedback.js");
 const { compassosDeFala } = __r("treino/analise.js");
@@ -3340,19 +3465,19 @@ const { novoBeat, pontuarCompassos, resumir, faixaSilabas, criarDesligar, textoB
 
 const desl = criarDesligar();
 
-function iniciar(c) {
+// Registra a rodada fala/escuta no contexto `c` (o beat já deve estar escolhido no motor).
+function montarFalaEscuta(c, desligar) {
   const k = c.faixa >= 5 ? 8 : CONFIG.modosVoz.pegaFala;
   const ciclos = k === 8 ? 1 : CONFIG.modosVoz.pegaCiclos;
   const fala = compassosDeFala(k, ciclos);
   const total = 2 * k * ciclos;
   const ehFala = (n) => fala.includes(n);
 
-  c.motor.tocarBeat(novoBeat(c));
   c.deveLimparVoz = ehFala;
   c.area.rotulo('PREPARE');
   c.area.texto(`Fale 1 frase por compasso (${faixaSilabas(c.faixa).join(' a ')} sílabas). A palavra da rima cai no 4.`);
 
-  desl.add(c.motor.aoCompasso(({ compasso, tempo }) => {
+  desligar.add(c.motor.aoCompasso(({ compasso, tempo }) => {
     if (compasso === 0) {
       c.ativar();
       c.agendarFim(c.relogio.tempoDoPasso(total + 1, 0), finalizar);
@@ -3375,9 +3500,14 @@ function iniciar(c) {
   }
 }
 
+function iniciar(c) {
+  c.motor.tocarBeat(novoBeat(c));
+  montarFalaEscuta(c, desl);
+}
+
 const modo = { id: 'pega-o-beat', nome: 'Pega o beat', precisaMic: true, precisaVoz: false, iniciar, parar: () => desl.tudo() };
 
-return { get modo() { return modo; } };
+return { get montarFalaEscuta() { return montarFalaEscuta; }, get modo() { return modo; } };
 },
 "treino/modos/palavra-alvo.js": function (__r) {
 // palavra-alvo.js — modo 7 "Palavra-alvo" (spec 7.2). A frase termina com a palavra da tela e a
@@ -3715,6 +3845,163 @@ function iniciar(c) {
   c.ativar();
 }
 const modo = { id: 'metronomo', nome: 'Metrônomo', precisaMic: false, precisaVoz: false, semNota: true, iniciar, parar() {} };
+
+return { get modo() { return modo; } };
+},
+"treino/modos/beat-fora.js": function (__r) {
+// beat-fora.js — treinar em cima de um beat de verdade (spec, Fase 10). Três fontes:
+//  · microfone: o beat toca na caixa de som (YouTube em outro aparelho, por exemplo); o app ouve
+//    10 s, acha o BPM e o 1, e conta junto. Sem nota (o beat entra no microfone).
+//  · arquivo: um beat salvo no celular; o app toca o arquivo alinhado ao relógio. Com fone, pode
+//    treinar com nota (rodada fala/escuta do Pega o beat).
+//  · dedo: o usuário toca no 1 2 3 4 (duas vezes) e o app segue esse andamento.
+const { analisarBeat, analisarToques, proximoUm } = __r("audio/analise-beat.js");
+const { estado } = __r("dados/estado.js");
+const { garantirSessao } = __r("ui/sessao.js");
+const { obterMic } = __r("ui/mic-ui.js");
+const { el } = __r("ui/dom.js");
+const { montarFalaEscuta } = __r("treino/modos/pega-o-beat.js");
+const { criarDesligar } = __r("treino/modos/voz-comum.js");
+
+const desl = criarDesligar();
+let det = null;      // { fonte: 'mic'|'arquivo'|'dedo', bpm, um, buffer?, confianca }
+let giro = 0;        // tempos a somar quando o 1 detectado está no lugar errado
+let ajusteMs = 0;    // ajuste fino do alinhamento
+let comNota = false;
+let fonteTocando = null;
+
+function mono(buf) {
+  const n = buf.length, x = new Float32Array(n);
+  for (let ch = 0; ch < buf.numberOfChannels; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < n; i++) x[i] += d[i] / buf.numberOfChannels; }
+  return x;
+}
+
+function preparar(area) {
+  const p = area.painel();
+  const status = el('p', { className: 'status-beat', textContent: det ? '' : 'De onde vem o beat?' });
+  const ajuste = el('p', { className: 'suave pequeno' });
+  const mostrar = () => {
+    if (!det) return;
+    const conf = det.confianca === undefined ? '' : det.confianca > 0.5 ? ' · confiança alta' : det.confianca > 0.2 ? ' · confiança média' : ' · confiança baixa: confira o 1';
+    status.textContent = `${det.bpm.toFixed(1)} BPM${conf}`;
+    ajuste.textContent = `Ajuste: o 1 ${giro ? `girado ${giro} tempo${giro > 1 ? 's' : ''}` : 'como detectado'} · ${ajusteMs > 0 ? '+' : ''}${ajusteMs} ms. Toque em Começar.`;
+    area.texto(det.fonte === 'mic' ? 'Deixe o beat tocando. O app conta junto: 1 2 3 4.' : det.fonte === 'arquivo' ? 'O app toca o seu beat e conta junto.' : 'O app segue o andamento que você marcou.');
+    blocoAjuste.hidden = false;
+    linhaNota.hidden = det.fonte !== 'arquivo';
+  };
+  const botao = (t, fn, cls = 'botao sec') => { const b = el('button', { type: 'button', className: cls, textContent: t }); b.addEventListener('click', fn); return b; };
+
+  const ouvir = botao('Ouvir pelo microfone (beat na caixa de som)', async () => {
+    const s = garantirSessao();
+    try {
+      const cap = await obterMic(s.ctx, (t) => { status.textContent = t; });
+      status.textContent = 'Ouvindo 10 segundos… deixe o beat tocar alto, sem falar.';
+      const g = await cap.gravar(10);
+      const r = analisarBeat(g.amostras, g.sampleRate);
+      if (!r.ok) { status.textContent = `Não deu: ${r.motivo}.`; return; }
+      const micMs = estado().calibracao.micMs || 0;
+      det = { fonte: 'mic', bpm: r.bpm, um: g.inicio + r.primeiroUmS - micMs / 1000, confianca: r.confianca };
+      giro = 0; ajusteMs = 0;
+      mostrar();
+      if (!micMs) ajuste.textContent += ' Calibre o microfone (eco) para alinhar melhor.';
+    } catch (e) { status.textContent = `Não deu: ${e.message}`; }
+  });
+
+  const arquivo = el('input', { type: 'file', accept: 'audio/*', hidden: true });
+  arquivo.addEventListener('change', async () => {
+    const f = arquivo.files[0];
+    if (!f) return;
+    status.textContent = `Analisando ${f.name}…`;
+    try {
+      const s = garantirSessao();
+      const buffer = await s.ctx.decodeAudioData(await f.arrayBuffer());
+      const x = mono(buffer).subarray(0, Math.min(buffer.length, buffer.sampleRate * 40));
+      const r = analisarBeat(x, buffer.sampleRate);
+      if (!r.ok) { status.textContent = `Não deu: ${r.motivo}.`; return; }
+      det = { fonte: 'arquivo', bpm: r.bpm, um: r.primeiroUmS, buffer, confianca: r.confianca, nome: f.name };
+      giro = 0; ajusteMs = 0;
+      mostrar();
+    } catch (e) { status.textContent = `Não consegui abrir esse arquivo (${e.message || 'formato'}). Use mp3, m4a, wav ou ogg.`; }
+    arquivo.value = '';
+  });
+  const abrir = el('label', { className: 'botao sec' }, ['Abrir arquivo de beat do celular', arquivo]);
+
+  let toques = [];
+  const tocar = el('button', { type: 'button', className: 'botao sec toque', textContent: 'Marcar no dedo: toque no 1 2 3 4, duas vezes', hidden: false });
+  tocar.addEventListener('pointerdown', () => {
+    const ctx = garantirSessao().ctx;
+    toques.push(ctx.currentTime - (estado().calibracao.toqueMs || 0) / 1000);
+    if (toques.length > 1 && toques[toques.length - 1] - toques[toques.length - 2] > 2) toques = [toques[toques.length - 1]];
+    tocar.textContent = `${toques.length} de 8`;
+    if (toques.length < 8) return;
+    const r = analisarToques(toques);
+    toques = [];
+    tocar.textContent = 'Marcar de novo';
+    if (!r.ok) { status.textContent = `Não deu: ${r.motivo}.`; return; }
+    det = { fonte: 'dedo', bpm: r.bpm, um: r.primeiroUmS };
+    giro = 0; ajusteMs = 0;
+    mostrar();
+  });
+
+  const blocoAjuste = el('div', { hidden: true }, [
+    el('div', { className: 'botoes-3' }, [
+      botao('O 1 está errado', () => { giro = (giro + 1) % 4; mostrar(); }),
+      botao('−20 ms', () => { ajusteMs -= 20; mostrar(); }),
+      botao('+20 ms', () => { ajusteMs += 20; mostrar(); }),
+    ]),
+    ajuste,
+  ]);
+  const caixaNota = el('input', { type: 'checkbox', checked: comNota });
+  caixaNota.addEventListener('change', () => { comNota = caixaNota.checked; });
+  const linhaNota = el('label', { className: 'linha', hidden: true }, [el('span', { textContent: 'Treinar com nota (use fone de ouvido)' }), caixaNota]);
+
+  p.append(status, ouvir, abrir, tocar, blocoAjuste, linhaNota,
+    el('p', { className: 'suave pequeno', textContent: 'YouTube: toque o beat em outro aparelho ou numa caixa de som e use "Ouvir pelo microfone". O app não consegue puxar o som direto do YouTube.' }));
+  area.rotulo('BEAT DE FORA');
+  if (!det) area.texto('O app descobre o BPM e onde cai o 1.');
+  mostrar();
+}
+
+function iniciar(c) {
+  if (!det) { c.area.aviso('Escolha primeiro de onde vem o beat.'); return false; }
+  c.bpm = det.bpm;
+  const compasso = 240 / det.bpm, tempo = 60 / det.bpm;
+  const desloc = giro * tempo + ajusteMs / 1000;
+  if (det.fonte === 'arquivo') {
+    c.motor.tocarBeat({ externo: true, swing: 0 });
+    let d = det.um + desloc;
+    while (d < 0) d += compasso;
+    const fim = d + Math.max(1, Math.floor((det.buffer.duration - d) / compasso)) * compasso;
+    desl.add(c.motor.aoCompasso(({ compasso: n, tempo: t }) => {
+      if (n !== 1) return;
+      const src = c.ctx.createBufferSource();
+      src.buffer = det.buffer;
+      src.loop = true; src.loopStart = d; src.loopEnd = Math.min(fim, det.buffer.duration);
+      src.connect(c.bateria.entradaBeat);
+      src.start(t, d);
+      fonteTocando = src;
+    }));
+    if (comNota && c.captura) return montarFalaEscuta(c, desl);
+  } else {
+    c.motor.tocarBeat({ externo: true, swing: 0, semContagem: true });
+    c.inicioRelogio = proximoUm(det.um + desloc, compasso, c.ctx.currentTime + 0.2);
+  }
+  c.ativar();
+  c.area.rotulo('LIVRE');
+  c.area.texto(det.fonte === 'arquivo' ? 'Rime em cima do seu beat. A grade mostra o 1 2 3 4.' : 'Contando junto com o beat de fora. Se sair do tempo, pare e ouça de novo.');
+}
+
+function parar() {
+  desl.tudo();
+  try { fonteTocando?.stop(); } catch { /* já parado */ }
+  fonteTocando = null;
+}
+
+const modo = {
+  id: 'beat-fora', nome: 'Beat de fora',
+  get precisaMic() { return det?.fonte === 'arquivo' && comNota; },
+  precisaVoz: false, preparar, iniciar, parar,
+};
 
 return { get modo() { return modo; } };
 },
@@ -4325,6 +4612,153 @@ function marcar(placar, vencedor) {
 }
 
 return { get COMPASSOS_POR_VEZ() { return COMPASSOS_POR_VEZ; }, get vezDoCompasso() { return vezDoCompasso; }, get totalCompassos() { return totalCompassos; }, get marcar() { return marcar; } };
+},
+"audio/analise-beat.js": function (__r) {
+// analise-beat.js — descobre o BPM, onde caem os tempos e qual deles é o 1 num trecho de áudio
+// de um beat real (arquivo ou o microfone ouvindo a caixa de som). PURO: recebe amostras mono.
+//
+// Passos: (1) energia em janelas de 10 ms, em 3 faixas (tudo, grave = bumbo, agudo = caixa);
+// (2) "novidade" = só as subidas de energia; (3) autocorrelação acha o período do tempo;
+// (4) ajuste fino do BPM e da fase; (5) o 1 é o tempo com mais bumbo e com caixa no 2 e no 4.
+// O BPM é dobrado/dividido para ficar entre 66 e 132 (BPM sentido: trap 140 vira 70).
+
+const HOP_S = 0.01;
+
+// Filtro passa-baixa de 1 polo (frequência de corte fc).
+function passaBaixa(x, sr, fc) {
+  const a = 1 - Math.exp((-2 * Math.PI * fc) / sr);
+  const y = new Float32Array(x.length);
+  let v = 0;
+  for (let i = 0; i < x.length; i++) { v += a * (x[i] - v); y[i] = v; }
+  return y;
+}
+
+// Energia (log) por janela de HOP_S.
+function envelope(x, hop) {
+  const n = Math.floor(x.length / hop), e = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    let s = 0;
+    for (let j = i * hop; j < (i + 1) * hop; j++) s += x[j] * x[j];
+    e[i] = Math.log1p(1000 * (s / hop));
+  }
+  return e;
+}
+
+// Subidas de energia, menos a média local (0,4 s), sem negativos.
+function novidade(e) {
+  const n = e.length, d = new Float32Array(n), out = new Float32Array(n);
+  for (let i = 1; i < n; i++) d[i] = Math.max(0, e[i] - e[i - 1]);
+  const w = 20;
+  let soma = 0;
+  for (let i = 0; i < n; i++) {
+    soma += d[i] - (i - 2 * w - 1 >= 0 ? d[i - 2 * w - 1] : 0);
+    const ini = Math.max(0, i - 2 * w), cont = i - ini + 1;
+    const c = i - w;
+    if (c >= 0) out[c] = Math.max(0, d[c] - soma / cont);
+  }
+  return out;
+}
+
+// Valor de v em posição fracionária (máximo numa vizinhança de ±1 janela: tolera erro de arredondamento).
+function pico(v, p) {
+  const i = Math.round(p);
+  let m = 0;
+  for (let k = i - 1; k <= i + 1; k++) if (k >= 0 && k < v.length && v[k] > m) m = v[k];
+  return m;
+}
+
+// Energia da novidade sobre uma grade de período P (janelas) e fase f.
+function somaGrade(nov, P, f) {
+  let s = 0;
+  for (let p = f; p < nov.length; p += P) s += pico(nov, p);
+  return s;
+}
+
+function dobrarBpm(bpm, min = 66, max = 132) {
+  let b = bpm;
+  while (b >= max) b /= 2;
+  while (b < min) b *= 2;
+  return b;
+}
+
+// x: Float32Array mono. sr: taxa de amostragem. Devolve
+// { bpm, periodoS, primeiroUmS, tempos: [s], confianca (0 a 1), ok }
+function analisarBeat(x, sr) {
+  const hop = Math.round(sr * HOP_S);
+  const grave = passaBaixa(x, sr, 150);
+  const lpAgudo = passaBaixa(x, sr, 2500);
+  const agudo = new Float32Array(x.length);
+  for (let i = 0; i < x.length; i++) agudo[i] = x[i] - lpAgudo[i];
+  const nov = novidade(envelope(x, hop));
+  const novG = novidade(envelope(grave, hop));
+  const novA = novidade(envelope(agudo, hop));
+  const n = nov.length;
+  if (n < 400) return { ok: false, motivo: 'trecho curto demais (precisa de uns 6 segundos)' };
+
+  // (3) autocorrelação para tempos entre 50 e 200 BPM
+  const lagMin = Math.floor(60 / 200 / HOP_S), lagMax = Math.ceil(60 / 50 / HOP_S);
+  const ac = new Float32Array(lagMax + 2);
+  for (let L = lagMin; L <= lagMax + 1; L++) { let s = 0; for (let i = 0; i + L < n; i++) s += nov[i] * nov[i + L]; ac[L] = s / (n - L); }
+  // pontua cada candidato pela soma dos múltiplos (pente) e escolhe o melhor
+  let melhorL = lagMin, melhorS = -1;
+  for (let L = lagMin; L <= lagMax; L++) {
+    const s = ac[L] + 0.5 * (2 * L <= lagMax + 1 ? ac[2 * L] : 0) + 0.25 * ac[Math.round(L / 2)] ;
+    if (s > melhorS) { melhorS = s; melhorL = L; }
+  }
+  const media = ac.slice(lagMin, lagMax).reduce((a, b) => a + b, 0) / (lagMax - lagMin);
+  // (4) BPM sentido e ajuste fino (±3%, passo 0,02 BPM) maximizando a energia na grade
+  let bpm = dobrarBpm(60 / (melhorL * HOP_S));
+  let melhor = { s: -1, bpm, f: 0 };
+  for (let b = bpm * 0.97; b <= bpm * 1.03; b += 0.02) {
+    const P = 60 / b / HOP_S;
+    for (let f = 0; f < P; f += 1) {
+      const s = somaGrade(nov, P, f);
+      if (s > melhor.s) melhor = { s, bpm: b, f };
+    }
+  }
+  bpm = melhor.bpm;
+  const P = 60 / bpm / HOP_S;
+  // fase fina: passo de 0,25 janela em torno da melhor
+  let fase = melhor.f, sMax = -1;
+  for (let f = melhor.f - 1; f <= melhor.f + 1; f += 0.25) { const s = somaGrade(nov, P, f); if (s > sMax) { sMax = s; fase = f; } }
+  if (fase < 0) fase += P;
+
+  // (5) qual dos 4 tempos é o 1: bumbo forte no 1 (e no 3), caixa no 2 e no 4
+  const G = [0, 0, 0, 0], A = [0, 0, 0, 0];
+  let k = 0;
+  for (let p = fase; p < n; p += P, k++) { G[k % 4] += pico(novG, p); A[k % 4] += pico(novA, p); }
+  const tG = G.reduce((a, b) => a + b, 0) || 1, tA = A.reduce((a, b) => a + b, 0) || 1;
+  let r1 = 0, sr1 = -Infinity;
+  for (let r = 0; r < 4; r++) {
+    const s = (G[r] + 0.5 * G[(r + 2) % 4] - 0.5 * (G[(r + 1) % 4] + G[(r + 3) % 4])) / tG
+      + (A[(r + 1) % 4] + A[(r + 3) % 4] - A[r] - A[(r + 2) % 4]) / tA;
+    if (s > sr1) { sr1 = s; r1 = r; }
+  }
+  const tempos = [];
+  for (let p = fase; p < n; p += P) tempos.push(p * HOP_S);
+  const confianca = Math.max(0, Math.min(1, (melhorS / (media || 1e-9) - 1.5) / 4));
+  return { ok: true, bpm: Math.round(bpm * 100) / 100, periodoS: 60 / bpm, primeiroUmS: tempos[r1], tempos, confianca };
+}
+
+// Marcação no dedo: instantes dos toques (s), o primeiro no 1, um por tempo. Reta pelos mínimos quadrados.
+function analisarToques(ts) {
+  if (ts.length < 4) return { ok: false, motivo: 'toque pelo menos 4 vezes' };
+  const n = ts.length, xm = (n - 1) / 2, ym = ts.reduce((a, b) => a + b, 0) / n;
+  let sxy = 0, sxx = 0;
+  ts.forEach((t, i) => { sxy += (i - xm) * (t - ym); sxx += (i - xm) ** 2; });
+  const periodoS = sxy / sxx, a = ym - periodoS * xm;
+  const desvioMs = Math.sqrt(ts.reduce((s, t, i) => s + (t - (a + i * periodoS)) ** 2, 0) / n) * 1000;
+  const bpm = 60 / periodoS;
+  return { ok: bpm > 40 && bpm < 220, bpm: Math.round(bpm * 100) / 100, periodoS, primeiroUmS: a, desvioMs: Math.round(desvioMs), motivo: 'toques irregulares demais' };
+}
+
+// Próximo 1 (instante no relógio) a partir de um 1 conhecido, depois de `depois`.
+function proximoUm(umS, compassoS, depois) {
+  const k = Math.ceil((depois - umS) / compassoS);
+  return umS + Math.max(0, k) * compassoS;
+}
+
+return { get dobrarBpm() { return dobrarBpm; }, get analisarBeat() { return analisarBeat; }, get analisarToques() { return analisarToques; }, get proximoUm() { return proximoUm; } };
 }
 };
 const __c = {};
