@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e0f13">
+  <title>Dojo de Freestyle</title>
+  <style>
+/* tokens.css — cores, tamanhos e componentes-base do Dojo. PRONTO: o style.css importa este arquivo
+   (@import "tokens.css";) e só usa estas variáveis. Não crie cores novas fora daqui. Ver docs/VISUAL.md. */
+:root {
+  --fundo:#0e0f13; --painel:#1a1c23; --painel-2:#11131a; --linha:#2b2f3a;
+  --texto:#f2f2f2; --suave:#9aa3b2;
+  --bumbo:#4da3ff; --caixa:#ff8a3d; --voz:#3ddc84; --erro:#ff4d5e; --aviso:#ffd23d;
+  --raio:14px; --raio-botao:12px; --toque:52px; --espaco:16px;
+  --f-tempo:700 48px system-ui; --f-titulo:700 21px system-ui; --f-contador:600 20px system-ui; --f-texto:16px/1.45 system-ui; --f-mono:13px/1.6 ui-monospace,Menlo,monospace;
+}
+* { box-sizing:border-box; }
+html, body { margin:0; background:var(--fundo); color:var(--texto); font:var(--f-texto); font-variant-numeric:tabular-nums; -webkit-tap-highlight-color:transparent; }
+body { max-width:430px; margin-inline:auto; padding:var(--espaco) var(--espaco) calc(72px + env(safe-area-inset-bottom)); }
+h1 { font:var(--f-titulo); margin:4px 0; }
+p, .suave { color:var(--suave); }
+.painel { background:var(--painel); border:1px solid var(--linha); border-radius:var(--raio); padding:12px; margin:12px 0; }
+.botao { width:100%; min-height:var(--toque); border:0; border-radius:var(--raio-botao); background:var(--voz); color:#06210f; font:700 17px system-ui; }
+.botao.sec { background:#262b36; color:var(--texto); }
+.botao:disabled { opacity:.45; }
+.botao:focus-visible, a:focus-visible, input:focus-visible { outline:2px solid var(--aviso); outline-offset:2px; }
+.tempos { display:flex; gap:10px; }
+.tempos > i { flex:1; aspect-ratio:1; max-height:76px; border-radius:50%; display:grid; place-items:center; font:700 30px system-ui; font-style:normal; background:var(--painel-2); border:3px solid var(--linha); color:var(--suave); }
+.tempos > i.caixa { border-color:var(--caixa); }
+.tempos > i.aceso { background:var(--bumbo); color:#06101f; }
+.tempos > i.caixa.aceso { background:var(--caixa); }
+.faixa-aviso { background:var(--aviso); color:#221a00; font-weight:700; text-align:center; border-radius:10px; padding:8px; }
+.rotulo-vez { font:800 34px system-ui; text-align:center; letter-spacing:.04em; }
+.rotulo-vez.fala { color:var(--voz); } .rotulo-vez.escuta { color:var(--suave); }
+.barra-metrica { height:12px; border-radius:6px; background:var(--painel-2); overflow:hidden; }
+.barra-metrica > i { display:block; height:100%; background:var(--voz); }
+.nav { position:fixed; inset:auto 0 0 0; display:flex; background:var(--painel); border-top:1px solid var(--linha); padding-bottom:env(safe-area-inset-bottom); }
+.nav > a { flex:1; min-height:56px; display:grid; place-items:center; color:var(--suave); text-decoration:none; font-size:12px; }
+.nav > a.ativo { color:var(--voz); }
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+
+/* style.css — layout das telas. Cores e componentes-base vêm de tokens.css (ver docs/VISUAL.md). */
+
+
+section[hidden], [hidden] { display: none !important; }
+h2 { font: 700 17px system-ui; margin: 0 0 8px; }
+
+.campo { display: grid; gap: 6px; margin: 12px 0; }
+.campo > span { color: var(--suave); font-size: 14px; }
+
+select, input[type="number"] {
+  min-height: 48px; width: 100%; padding: 0 12px;
+  background: var(--painel-2); color: var(--texto);
+  border: 1px solid var(--linha); border-radius: 10px;
+  font: 16px system-ui;
+}
+input[type="range"] { width: 100%; min-height: 48px; accent-color: var(--voz); }
+input[type="checkbox"] { width: 26px; height: 26px; accent-color: var(--voz); flex: none; }
+
+.linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; }
+.botoes { display: grid; gap: 10px; }
+label.botao, a.botao { display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; box-sizing: border-box; }
+
+.aviso-texto { color: var(--suave); min-height: 1.4em; margin: 0 0 4px; font-size: 14px; }
+
+.contador { font: var(--f-contador); text-align: center; margin: 4px 0 12px; min-height: 1.4em; }
+.tempos { margin: 8px 0 12px; }
+.bpm-linha { display: grid; grid-template-columns: 1fr 1fr 1.6fr 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 12px; }
+.bpm { font: var(--f-contador); text-align: center; }
+.lienzo { display: block; width: 100%; height: auto; margin: 10px 0; }
+.botoes-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+.botao.toque { min-height: 96px; font-size: 20px; margin-top: 10px; }
+.botao small { display: block; font-size: 13px; font-weight: 500; opacity: 0.8; margin-top: 2px; }
+.desligado { opacity: 0.45; }
+.estrelas { font-size: 30px; letter-spacing: 4px; color: var(--aviso); margin: 4px 0; }
+.titulo-nota { font: var(--f-contador); margin: 0; }
+#bl-grade { aspect-ratio: 360 / 90; }
+#bl-curva { aspect-ratio: 360 / 130; }
+.bpm-linha .botao { min-height: var(--toque); font-size: 15px; padding: 0; }
+.nav { max-width: 430px; margin-inline: auto; left: 0; right: 0; }
+
+</style>
+</head>
+<body>
+  <main>
+
+    <section id="inicio" aria-labelledby="t-inicio">
+      <h1 id="t-inicio">Dojo de Freestyle</h1>
+      <p>Treino de rima no tempo do beat.</p>
+      <div class="painel">
+        <p>Faixa atual: <b id="inicio-faixa">1</b> · Sequência: <b id="inicio-seq">0</b> dias</p>
+        <p class="suave">O treino do dia ainda não está pronto.</p>
+        <a class="botao sec" href="#treino">Metrônomo e beat de teste</a>
+        <a class="botao sec" href="#modos">Ver os modos</a>
+      </div>
+    </section>
+
+    <section id="modos" hidden aria-labelledby="t-modos">
+      <h1 id="t-modos">Modos</h1>
+      <p class="suave">Os modos de toque treinam o ouvido. Os de voz chegam nas próximas fases.</p>
+      <div class="botoes" id="modos-lista"></div>
+    </section>
+
+    <section id="treino" hidden aria-labelledby="t-treino">
+      <h1 id="t-treino"><span id="tr-titulo">Metrônomo</span></h1>
+
+      <div class="painel">
+        <label class="campo">
+          <span>Modo</span>
+          <select id="tr-modo">
+            <option value="metronomo">Metrônomo</option>
+            <option value="beat">Beat livre (teste)</option>
+            <option value="ache-o-1">Ache o 1</option>
+            <option value="que-tempo">Que tempo foi?</option>
+            <option value="preveja-mudanca">Preveja a mudança</option>
+            <option value="beat-fantasma">Beat fantasma</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="painel">
+        <p id="tr-contador" class="contador" aria-live="polite">Pronto</p>
+        <p id="tr-aviso-muda" class="faixa-aviso" hidden>Muda em 1 compasso</p>
+        <p id="tr-pausado" class="faixa-aviso" hidden></p>
+      </div>
+
+      <div class="painel" id="bloco-metronomo">
+        <div class="tempos" id="tr-tempos"></div>
+      </div>
+
+      <div class="painel" id="bloco-toque" hidden>
+        <p id="modo-rotulo" class="rotulo-vez fala"></p>
+        <p id="modo-texto" class="suave"></p>
+        <div class="botoes-4" id="modo-respostas" hidden>
+          <button class="botao sec" type="button" data-n="1">1</button>
+          <button class="botao sec" type="button" data-n="2">2</button>
+          <button class="botao sec" type="button" data-n="3">3</button>
+          <button class="botao sec" type="button" data-n="4">4</button>
+        </div>
+        <button class="botao sec toque" id="modo-toque" type="button">Toque aqui</button>
+      </div>
+
+      <div class="painel" id="bloco-bpm">
+        <div class="bpm-linha">
+          <button class="botao sec" id="tr-m4" type="button">−4</button>
+          <button class="botao sec" id="tr-m1" type="button">−1</button>
+          <span id="tr-bpm" class="bpm">80 BPM</span>
+          <button class="botao sec" id="tr-p1" type="button">+1</button>
+          <button class="botao sec" id="tr-p4" type="button">+4</button>
+        </div>
+      </div>
+
+      <div class="painel" id="bloco-beat" hidden>
+        <label class="campo">
+          <span>Estilo</span>
+          <select id="bl-estilo">
+            <option value="boombap">Boom bap</option>
+            <option value="lento">Lento</option>
+            <option value="trap">Trap</option>
+            <option value="rapido">Rápido</option>
+          </select>
+        </label>
+        <div class="bpm-linha">
+          <label class="campo" style="grid-column: span 3;">
+            <span>BPM</span>
+            <input type="number" id="bl-bpm" min="66" max="110" step="1" inputmode="numeric">
+          </label>
+          <button class="botao sec" id="bl-semente" type="button" style="grid-column: span 2;">Outro beat</button>
+        </div>
+        <p id="bl-secao" class="suave"></p>
+        <div class="linha">
+          <span>Esconder contador</span>
+          <input type="checkbox" id="bl-esconder">
+        </div>
+        <canvas id="bl-grade" class="lienzo" height="90"></canvas>
+        <canvas id="bl-curva" class="lienzo" height="130"></canvas>
+      </div>
+
+      <div class="painel">
+        <button class="botao" id="tr-iniciar" type="button">Começar</button>
+      </div>
+
+      <div class="painel">
+        <label class="campo">
+          <span>Volume do clique: <b id="tr-volClique-valor">0.00</b></span>
+          <input type="range" id="tr-volClique" min="0" max="1" step="0.05">
+        </label>
+        <p id="tr-aviso-volume" class="aviso-texto"></p>
+        <p id="tr-latencia" class="suave"></p>
+      </div>
+    </section>
+
+    <section id="resultado" hidden aria-labelledby="t-resultado">
+      <h1 id="t-resultado">Resultado</h1>
+      <div class="painel">
+        <p id="res-nome" class="suave"></p>
+        <p id="res-estrelas" class="estrelas" aria-label="estrelas"></p>
+        <p id="res-nota" class="titulo-nota"></p>
+        <p id="res-principal"></p>
+        <p id="res-detalhe" class="suave"></p>
+      </div>
+      <div class="botoes">
+        <button class="botao" id="res-proximo" type="button">Próximo modo</button>
+        <button class="botao sec" id="res-repetir" type="button">Repetir</button>
+      </div>
+    </section>
+
+    <section id="evolucao" hidden aria-labelledby="t-evolucao">
+      <h1 id="t-evolucao">Evolução</h1>
+      <p class="suave">Em construção.</p>
+    </section>
+
+    <section id="caderno" hidden aria-labelledby="t-caderno">
+      <h1 id="t-caderno">Caderno</h1>
+      <p class="suave">Em construção.</p>
+    </section>
+
+    <section id="ajustes" hidden aria-labelledby="t-ajustes">
+      <h1 id="t-ajustes">Ajustes</h1>
+
+      <div class="painel">
+        <label class="campo">
+          <span>Estilo do beat</span>
+          <select id="aj-estilo">
+            <option value="boombap">Boom bap</option>
+            <option value="lento">Lento</option>
+            <option value="trap">Trap</option>
+            <option value="rapido">Rápido</option>
+          </select>
+        </label>
+
+        <label class="campo">
+          <span>Volume do beat: <b id="aj-volBeat-valor">0.80</b></span>
+          <input type="range" id="aj-volBeat" min="0" max="1" step="0.05">
+        </label>
+
+        <label class="campo">
+          <span>Volume do clique: <b id="aj-volClique-valor">0.00</b></span>
+          <input type="range" id="aj-volClique" min="0" max="1" step="0.05">
+        </label>
+
+        <label class="campo">
+          <span>Travar BPM (vazio = livre; de 66 a 110)</span>
+          <input type="number" id="aj-bpmTravado" min="66" max="110" step="1" inputmode="numeric" placeholder="livre">
+        </label>
+        <p class="aviso-texto" id="aj-msg" role="status"></p>
+
+        <div class="linha">
+          <span>BPM sentido ÷2 (trap)</span>
+          <input type="checkbox" id="aj-bpmSentido">
+        </div>
+        <div class="linha">
+          <span>Vibração no tempo 1</span>
+          <input type="checkbox" id="aj-vibrar">
+        </div>
+      </div>
+
+      <div class="painel">
+        <h2>Calibração do toque</h2>
+        <p id="aj-cal-atual" class="suave"></p>
+        <p id="aj-cal-msg" class="aviso-texto" role="status"></p>
+        <div class="botoes">
+          <button class="botao sec" id="aj-calibrar" type="button">Calibrar toque (12 cliques)</button>
+          <button class="botao sec toque" id="aj-cal-area" type="button" hidden>Toque aqui a cada clique</button>
+        </div>
+      </div>
+
+      <div class="painel">
+        <h2>Dados</h2>
+        <div class="botoes">
+          <button class="botao sec" id="aj-exportar" type="button">Exportar dados (.json)</button>
+          <label class="botao sec" for="aj-arquivo">Importar dados (.json)</label>
+          <input type="file" id="aj-arquivo" accept=".json,application/json" hidden>
+        </div>
+      </div>
+
+      <div class="painel" id="aj-confirma" hidden>
+        <h2>Importar</h2>
+        <p id="aj-confirma-resumo" class="suave"></p>
+        <div class="botoes">
+          <button class="botao" id="aj-confirmar" type="button">Substituir tudo</button>
+          <button class="botao sec" id="aj-cancelar" type="button">Cancelar</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="laboratorio" hidden aria-labelledby="t-laboratorio">
+      <h1 id="t-laboratorio">Laboratório</h1>
+      <p class="suave">Em construção.</p>
+    </section>
+
+  </main>
+
+  <nav class="nav" aria-label="Principal">
+    <a href="#inicio">Início</a>
+    <a href="#modos">Modos</a>
+    <a href="#evolucao">Evolução</a>
+    <a href="#caderno">Caderno</a>
+    <a href="#ajustes">Ajustes</a>
+  </nav>
+
+  <script>
+(()=>{var Yo=["inicio","modos","treino","resultado","evolucao","caderno","ajustes","laboratorio"],ot="inicio",tt=new Map;function io(o,t){tt.set(o,t)}function To(){let o=location.hash.slice(1);return Yo.includes(o)?o:ot}function qo(){let o=location.hash.slice(1);Yo.includes(o)||history.replaceState(null,"","#"+ot);let t=To();for(let e of document.querySelectorAll("main > section"))e.hidden=e.id!==t;for(let e of document.querySelectorAll(".nav > a"))e.classList.toggle("ativo",e.getAttribute("href")==="#"+t);window.scrollTo(0,0),tt.get(t)?.()}function Po(o){location.hash==="#"+o?qo():location.hash=o}function et(){window.addEventListener("hashchange",qo),qo()}var A={PASSOS:16,agendador:{intervaloMs:25,antecedenciaS:.12,inicioFolgaS:.15},onset:{piso:.015,pisoMin:.008,pisoMax:.05,ruidoFator:3,alphaRapido:.35,janelaS:.03,subidaDb:5,quedaDb:3,refratarioS:.09},pontuacao:{pesos:{fecho:.35,grade:.4,densidade:.1,respiro:.15},fecho:{ultimas:2,cravouPassos:.5,pertoPassos:1,ptsPerto:60},grade:{oitavas:{tol:.4,acaso:.4},semicolcheias:{tol:.25,acaso:.5},otimo:.85},densidade:{faixaIdeal:[5,10],faixaAvancada:[6,12],penalidadePorSilaba:15},respiro:{gapCheio:1.5,gapZero:.5},estrelas:[85,65,40],toque:{acertoMs:70,quaseMs:130}},feedback:{foraTempoFecho:.5,ultimoTarde:14.5,ultimoCedo:11.5,viesMs:60,viesCalibracaoMs:120,respiroBaixo:50,notaBoa:85},treino:{bpmInicial:80,bpmMin:66,bpmMax:110,passoBpm:4,notaSobe:85,notaDesce:50}};var at="dojo.v2";var Xt=o=>JSON.parse(JSON.stringify(o)),so=o=>o!==null&&typeof o=="object"&&!Array.isArray(o);function W(){return{versao:2,calibracao:{micMs:0,toqueMs:0,metodo:"eco",data:""},ajustes:{estilo:"boombap",volBeat:.8,volClique:0,pisoMic:null,subidaDb:5,entradaId:null,modoVoz:"desligado",bpmTravado:null,bpmSentidoMetade:!1,vibrar:!0},faixa:1,criterios:{seguidas:0},modos:{},historico:[],sequencia:{dias:0,ultimoDia:""},batalhas:[],caderno:[]}}function Ao(o,t=W()){let e=Xt(t);for(let r of Object.keys(o)){let a=o[r];a!==void 0&&(so(a)&&so(e[r])?e[r]=Ao(a,e[r]):e[r]=a)}return e}function rt(o){let t=null;try{t=o?.getItem(at)??null}catch{return W()}if(!t)return W();try{let e=JSON.parse(t);return so(e)?Ao(e):W()}catch{return W()}}function Eo(o,t){Array.isArray(t.historico)&&t.historico.length>500&&(t.historico=t.historico.slice(-500));try{return o?.setItem(at,JSON.stringify(t)),!0}catch{return!1}}function nt(o){return JSON.stringify(o,null,2)}function it(o){let t;try{t=JSON.parse(o)}catch{return{ok:!1,erro:"o arquivo n\xE3o \xE9 JSON v\xE1lido"}}return!so(t)||typeof t.versao!="number"?{ok:!1,erro:'o arquivo n\xE3o tem o campo "versao" num\xE9rico'}:{ok:!0,dados:Ao(t)}}function Oo(){try{return window.localStorage}catch{return null}}var N=rt(Oo()),S=()=>N;function E(o){return o(N),Eo(Oo(),N),N}function st(o){return N=o,Eo(Oo(),N),N}var g=o=>document.getElementById(o),_=null;function lt(){let o=S().ajustes;g("aj-estilo").value=o.estilo,g("aj-volBeat").value=o.volBeat,g("aj-volBeat-valor").textContent=Number(o.volBeat).toFixed(2),g("aj-volClique").value=o.volClique,g("aj-volClique-valor").textContent=Number(o.volClique).toFixed(2),g("aj-bpmTravado").value=o.bpmTravado??"",g("aj-bpmSentido").checked=!!o.bpmSentidoMetade,g("aj-vibrar").checked=!!o.vibrar}function z(o){g("aj-msg").textContent=o}function ct(o,t){g(o).addEventListener("input",()=>{let e=Number(g(o).value);E(r=>{r.ajustes[t]=e}),g(o+"-valor").textContent=e.toFixed(2)})}function Zt(){g("aj-bpmTravado").addEventListener("change",()=>{let o=g("aj-bpmTravado").value.trim();if(o===""){E(a=>{a.ajustes.bpmTravado=null}),z("BPM livre");return}let t=Math.round(Number(o)),{bpmMin:e,bpmMax:r}=A.treino;if(!Number.isFinite(t)||t<e||t>r){z(`Use um n\xFAmero entre ${e} e ${r}, ou deixe vazio.`),g("aj-bpmTravado").value=S().ajustes.bpmTravado??"";return}E(a=>{a.ajustes.bpmTravado=t}),g("aj-bpmTravado").value=t,z(`BPM travado em ${t} BPM`)})}function Kt(){let o=nt(S()),t=URL.createObjectURL(new Blob([o],{type:"application/json"})),e=document.createElement("a");e.href=t,e.download=`dojo-freestyle-${new Date().toISOString().slice(0,10)}.json`,e.click(),setTimeout(()=>URL.revokeObjectURL(t),1e3)}async function Yt(o){if(!o)return;let t=it(await o.text());if(!t.ok){_=null,g("aj-confirma").hidden=!0,z(`Importa\xE7\xE3o cancelada: ${t.erro}.`);return}_=t.dados;let e=t.dados.historico.length;g("aj-confirma-resumo").textContent=`Arquivo com ${e} rodada${e===1?"":"s"} no hist\xF3rico e faixa ${t.dados.faixa}. Os dados atuais ser\xE3o substitu\xEDdos.`,g("aj-confirma").hidden=!1}function oe(){g("aj-arquivo").addEventListener("change",o=>{Yt(o.target.files[0]),o.target.value=""}),g("aj-confirmar").addEventListener("click",()=>{_&&(st(_),_=null,g("aj-confirma").hidden=!0,lt(),z("Dados importados."))}),g("aj-cancelar").addEventListener("click",()=>{_=null,g("aj-confirma").hidden=!0,z("Importa\xE7\xE3o cancelada.")})}function ut(){lt(),g("aj-estilo").addEventListener("change",o=>{E(t=>{t.ajustes.estilo=o.target.value})}),ct("aj-volBeat","volBeat"),ct("aj-volClique","volClique"),Zt(),g("aj-bpmSentido").addEventListener("change",o=>{E(t=>{t.ajustes.bpmSentidoMetade=o.target.checked})}),g("aj-vibrar").addEventListener("change",o=>{E(t=>{t.ajustes.vibrar=o.target.checked})}),g("aj-exportar").addEventListener("click",Kt),oe()}var mt=o=>{let t=[...o].sort((r,a)=>r-a),e=t.length>>1;return t.length%2?t[e]:(t[e-1]+t[e])/2};function Bo(o,t=.08){let e=[];for(let r of[...o].sort((a,i)=>a-i))(!e.length||r-e[e.length-1]>=t)&&e.push(r);return e}function te(o,t,e={}){let{descartar:r=4,janela:a=.35,minPares:i=6,desvioMaxMs:l=40}=e,c=[];for(let n of o.slice(r)){let u=null;for(let m of t)Math.abs(m-n)<=a&&(u===null||Math.abs(m-n)<Math.abs(u-n))&&(u=m);u!==null&&c.push((u-n)*1e3)}if(c.length<i)return{ok:!1,toqueMs:null,desvioMs:null,pares:c.length,motivo:"poucos toques pareados"};let f=mt(c),d=mt(c.map(n=>Math.abs(n-f)));return{ok:d<l,toqueMs:Math.round(f),desvioMs:Math.round(d),pares:c.length,motivo:d<l?"":"toques muito irregulares: tente de novo"}}function dt(o,t,e,r=1){return new Promise(a=>{let i=.6666666666666666,l=o.currentTime+.6,c=Array.from({length:12},(m,v)=>l+v*i),f=c[11]+.5,d=[];t.definirVolumeClique(r);for(let m of c)t.clique(m,!1);let n=()=>{d.push(o.currentTime)};e.addEventListener("pointerdown",n);function u(){if(o.currentTime<f){requestAnimationFrame(u);return}e.removeEventListener("pointerdown",n),a(te(c,Bo(d)))}requestAnimationFrame(u)})}var X=null;function ft(){return X||(X=new(window.AudioContext||window.webkitAudioContext)),X.state==="suspended"&&X.resume().catch(()=>{}),X}var L=o=>60/o/4,yo=o=>240/o;function pt(o,t){let e=[{n:0,inicio:o,bpm:t}],r=()=>e[e.length-1];function a(d){let n=r(),u={n:n.n+1,inicio:n.inicio+yo(n.bpm),bpm:d??n.bpm};return e.push(u),u}function i(d){for(let n=e.length-1;n>=0;n--)if(e[n].inicio<=d)return e[n];return null}function l(d){let n=i(d)??e[0],u=(d-n.inicio)/L(n.bpm),m=Math.floor(u/16);return{compasso:n.n+m,passo:u-m*16}}function c(d,n){let u=e[0],m=r(),v,s;if(d<u.n)s=u.bpm,v=u.inicio+(d-u.n)*yo(s);else if(d>m.n)s=m.bpm,v=m.inicio+(d-m.n)*yo(s);else{let p=e[d-u.n];s=p.bpm,v=p.inicio}return v+n*L(s)}return{agendarProximoCompasso:a,posicaoEm:l,tempoDoPasso:c,bpmDoCompasso:d=>{let n=e[0],u=r();return d<=n.n?n.bpm:d>=u.n?u.bpm:e[d-n.n].bpm},ultimo:r,compassos:e}}function ht(o,t={}){let{intervaloMs:e,antecedenciaS:r,inicioFolgaS:a}={...A.agendador,...t},i=null,l=null,c=0,f=null,d=0,n=0,u=new Set;function m(s,p){let h=i.tempoDoPasso(s,p);return p%2===1?h+c*L(i.bpmDoCompasso(s)):h}function v(){let s=o.currentTime+r;for(;;){for(;i.ultimo().n<d;)i.agendarProximoCompasso(f??void 0),f=null;let p=m(d,n);if(p>s)break;let h={compasso:d,passo:n,tempo:p};for(let M of u)M(h);++n===16&&(n=0,d++)}}return{iniciar(s){this.parar(),i=pt(o.currentTime+a,s),d=0,n=0,f=null,l=setInterval(v,e),v()},parar(){l!==null&&(clearInterval(l),l=null)},definirBpm(s){f=s},definirSwing(s){c=Math.min(.2,Math.max(0,s))},aoPasso(s){return u.add(s),()=>u.delete(s)},posicaoEm:s=>i.posicaoEm(s),tempoDoPasso:(s,p)=>i.tempoDoPasso(s,p),bpmDoCompasso:s=>i.bpmDoCompasso(s),get ativo(){return l!==null}}}var bt=o=>440*Math.pow(2,(o-69)/12);function vt(o){let t=o.createDynamicsCompressor();t.connect(o.destination);let e=o.createGain();e.connect(t);let r=o.createGain();r.connect(o.destination);let a=1,i=o.createBuffer(1,o.sampleRate,o.sampleRate),l=i.getChannelData(0);for(let s=0;s<l.length;s++)l[s]=Math.random()*2-1;function c(s,p,h,M){let C=o.createGain();return C.gain.setValueAtTime(h,p),C.gain.exponentialRampToValueAtTime(.001,p+M),C.connect(s),C}function f(s,p,h,M,C){let q=o.createBufferSource();q.buffer=i;let y=o.createBiquadFilter();y.type=s,y.frequency.value=p,q.connect(y),y.connect(c(e,h,M,C)),q.start(h),q.stop(h+C+.01)}function d(s,p){let h=o.createOscillator();h.frequency.setValueAtTime(150,s),h.frequency.exponentialRampToValueAtTime(45,s+.12),h.connect(c(e,s,p,.35)),h.start(s),h.stop(s+.36)}function n(s,p){f("highpass",1200,s,.8*p,.18);let h=o.createOscillator();h.type="triangle",h.frequency.value=190,h.connect(c(e,s,.5*p,.1)),h.start(s),h.stop(s+.11)}function u(s,p,{aberto:h=!1,rolo:M=0,passoS:C=0}){let q=M>1?M:1,y=M>1?C/M:0,k=h?.25:Math.min(.05,y||.05);for(let Co=0;Co<q;Co++)f("highpass",7e3,s+Co*y,.3*p,k)}function m(s,p,h,M){let C=o.createOscillator();C.type="sawtooth",C.frequency.value=bt(h);let q=o.createBiquadFilter();q.type="lowpass",q.frequency.value=400,C.connect(q),q.connect(c(e,s,.5*p,2*M)),C.start(s),C.stop(s+2*M+.01)}function v(s,p,h,M){let C=16*M,q=o.createBiquadFilter();q.type="lowpass",q.frequency.value=1200,q.connect(c(e,s,.12*p,C));for(let y of[0,3,7]){let k=o.createOscillator();k.type="triangle",k.frequency.value=bt(h+y),k.connect(q),k.start(s),k.stop(s+C+.01)}}return{saida:t,tocar(s,p,h={}){let M=h.volume??1;switch(s){case"bumbo":return d(p,M);case"caixa":return n(p,M);case"chimbal":return u(p,M,h);case"baixo":return m(p,M,h.nota,h.passoS);case"acorde":return v(p,M,h.nota,h.passoS);default:throw new Error(`instrumento desconhecido: ${s}`)}},clique(s,p){let h=o.createOscillator();h.frequency.value=p?1500:1e3,h.connect(c(r,s,1,.03)),h.start(s),h.stop(s+.03)},definirVolumeBeat(s){a=s,e.gain.value=s},definirVolumeClique(s){r.gain.value=s},silenciarBeat(s,p){e.gain.setValueAtTime(p?0:a,s)},entrarBeat(s,p){e.gain.setValueAtTime(0,s),e.gain.linearRampToValueAtTime(a,s+p)}}}var Lo=32,wo=[0,3,7,10],ee={boombap:{nome:"Boom bap",bpm:[84,96],swing:.12,bumbo:{escolher:2,entre:[6,8,10,11]},chimbal:2},lento:{nome:"Lento",bpm:[70,80],swing:.06,bumbo:{fixos:[8]},chimbal:4},trap:{nome:"Trap",bpm:[66,76],swing:0,bumbo:{escolher:2,entre:[3,7,10,14]},chimbal:1,rolos:2},rapido:{nome:"R\xE1pido",bpm:[100,110],swing:.08,bumbo:{fixos:[8,10]},chimbal:2}};function U(o){let t=o>>>0;return()=>{t|=0,t=t+1831565813|0;let e=Math.imul(t^t>>>15,1|t);return e=e+Math.imul(e^e>>>7,61|e)^e,((e^e>>>14)>>>0)/4294967296}}var Do=(o,t,e)=>t+Math.floor(o()*(e-t+1)),Z=(o,t)=>t[Math.floor(o()*t.length)],xt=(o,t)=>o-t;function Io(o,t,e){let r=[...t],a=[];for(;a.length<e&&r.length;)a.push(r.splice(Math.floor(o()*r.length),1)[0]);return a.sort(xt)}var ae=[3,6,7,10,11,14],re=[3,6,8,10,12,14],St=[1,2,4];function gt(o,t,e){let r;if(t.bumbo.escolher)r=Io(o,t.bumbo.entre,t.bumbo.escolher);else if(r=[...t.bumbo.fixos],!e&&o()<.6){let c=ae.filter(f=>!r.includes(f));r.push(Z(o,c)),r.sort(xt)}let a=e?t.chimbal:Z(o,St),i=[{passo:0,grau:0}];for(let c of Io(o,re,Do(o,1,3)))i.push({passo:c,grau:Z(o,wo)});let l=o()<.55?Z(o,wo):null;return{bumboExtra:r,chimbalPasso:a,baixo:i,acorde:l}}function Mt(o,t){let e=JSON.stringify;return[e(o.bumboExtra)!==e(t.bumboExtra),o.chimbalPasso!==t.chimbalPasso,e(o.baixo)!==e(t.baixo),o.acorde!==t.acorde].filter(Boolean).length}function jo(){return new Array(16).fill(0)}function ne(o,t){let e=jo(),r=jo(),a=jo(),i=new Array(16).fill(null);e[0]=1;for(let l of o.bumboExtra)e[l]=.8;r[4]=1,r[12]=1;for(let l=0;l<16;l+=o.chimbalPasso)a[l]=l%4===0?.5:.3;for(let{passo:l,grau:c}of o.baixo)i[l]=c;return{bumbo:e,caixa:r,chimbal:a,baixo:i,rolos:[]}}function ie(o){let t={bumbo:[...o.bumbo],caixa:[...o.caixa],chimbal:[...o.chimbal],baixo:[...o.baixo],rolos:o.rolos.filter(e=>e<12)};for(let e=12;e<16;e++)t.chimbal[e]=0;return t.caixa[12]=1,t.caixa[14]=.8,t.caixa[15]=.9,t}var se=[[8,8,8,8],[8,4,4,8,8],[4,4,8,8,8]];function j({estilo:o="boombap",bpm:t,semente:e=1,pausas:r=0}={}){let a=ee[o];if(!a)throw new Error(`estilo desconhecido: ${o}`);let i=U(e),l=t??Do(i,a.bpm[0],a.bpm[1]),c=Do(i,33,40),f=Z(i,se),d=[],n=0,u=null;for(let m of f){let v=gt(i,a,u===null);if(u){for(let p=0;p<50&&Mt(v,u)<2;p++)v=gt(i,a,!1);Mt(v,u)<2&&(v.chimbalPasso=St.find(p=>p!==u.chimbalPasso),v.acorde=u.acorde===null?wo[1]:null)}let s=ne(v,a);a.rolos&&v.chimbalPasso===1&&(s.rolos=Io(i,[1,3,5,7,9,11],a.rolos)),d.push({inicio:n,tamanho:m,atributos:v,padrao:s,virada:ie(s),pausa:i()<r}),n+=m,u=v}return{estilo:o,bpm:l,swing:a.swing,tonica:c,semente:e,secoes:d}}function K(o,t){let e=(t%Lo+Lo)%Lo;for(let r=0;r<o.secoes.length;r++){let a=o.secoes[r];if(e>=a.inicio&&e<a.inicio+a.tamanho){let i=e-a.inicio;return{indice:r,compassoNaSecao:i,tamanho:a.tamanho,ateMudar:a.tamanho-i}}}throw new Error("compasso fora do beat")}function co(o,t){let e=K(o,t),r=o.secoes[e.indice],a=e.ateMudar===1?r.virada:r.padrao,i=r.pausa&&e.compassoNaSecao===0,l=[];for(let c=0;c<16;c++)!i&&a.bumbo[c]&&l.push({instrumento:"bumbo",passo:c,volume:a.bumbo[c]}),a.caixa[c]&&l.push({instrumento:"caixa",passo:c,volume:a.caixa[c]}),a.chimbal[c]&&l.push({instrumento:"chimbal",passo:c,volume:a.chimbal[c],rolo:a.rolos.includes(c)?3:0}),!i&&a.baixo[c]!==null&&l.push({instrumento:"baixo",passo:c,volume:.7,nota:o.tonica+a.baixo[c]});return r.atributos.acorde!==null&&l.push({instrumento:"acorde",passo:0,volume:.5,nota:o.tonica+24+r.atributos.acorde}),l}function Ct({ctx:o,relogio:t,bateria:e}){let r=null,a=null,i=[],l=null,c=new Set,f=new Set;function d({compasso:n,passo:u,tempo:m}){let v=n===0,s=n-1;if(r===null||v)u%4===0&&e.clique(m,u===0);else{a!==s&&(i=co(r,s),a=s);let p=L(t.bpmDoCompasso(n));for(let h of i)h.passo===u&&e.tocar(h.instrumento,m,{...h,passoS:p})}for(let p of c)p({compasso:n,beatN:s,passo:u,tempo:m});if(u===0)for(let p of f)p({compasso:n,beatN:s,tempo:m})}return{tocarBeat(n){r=n,a=null,t.definirSwing(n?.swing??0)},iniciar(n){l||(l=t.aoPasso(d)),t.iniciar(n)},parar(){t.parar(),l&&(l(),l=null)},definirBpm(n){t.definirBpm(n)},get beatAtual(){return r},aoPasso(n){return c.add(n),()=>c.delete(n)},aoCompasso(n){return f.add(n),()=>f.delete(n)}}}function qt(o){let t=[],e=!1,r=()=>o.outputLatency||o.baseLatency||0;function a(){let i=o.currentTime-r();for(;t.length&&t[0].t<=i;){let l=t.shift();i-l.t<=.5&&l.fn()}t.length?requestAnimationFrame(a):e=!1}return{agendarVisual(i,l){t.push({t:i,fn:l}),t.sort((c,f)=>c.t-f.t),e||(e=!0,requestAnimationFrame(a))},limpar(){t=[]}}}var Y=null;function lo(){if(Y)return Y;let o=ft(),t=ht(o),e=vt(o),r=Ct({ctx:o,relogio:t,bateria:e});return Y={ctx:o,relogio:t,bateria:e,motor:r,sinc:qt(o)},Y}var G=()=>Y;var B=o=>document.getElementById(o);function Tt(){let o=S().calibracao;B("aj-cal-atual").textContent=o.toqueMs?`Atraso do toque: ${o.toqueMs} ms (calibrado em ${o.data||"data desconhecida"})`:"Ainda n\xE3o calibrado: o toque n\xE3o \xE9 corrigido."}function Pt(){Tt(),B("aj-calibrar").addEventListener("click",async()=>{let o=lo();B("aj-cal-msg").textContent="Ou\xE7a os cliques e toque na \xE1rea a cada um.",B("aj-calibrar").disabled=!0,B("aj-cal-area").hidden=!1;let t=await dt(o.ctx,o.bateria,B("aj-cal-area"),1);if(B("aj-cal-area").hidden=!0,B("aj-calibrar").disabled=!1,o.bateria.definirVolumeClique(S().ajustes.volClique),t.ok){let e=new Date().toISOString().slice(0,10);E(r=>{r.calibracao={...r.calibracao,toqueMs:t.toqueMs,metodo:"toque",data:e}}),B("aj-cal-msg").textContent=`Calibrado: ${t.toqueMs} ms (desvio ${t.desvioMs} ms, ${t.pares} toques).`}else B("aj-cal-msg").textContent=`N\xE3o valeu: ${t.motivo}. Tente de novo.`;Tt()})}function At(o){o.innerHTML="";let t=[1,2,3,4].map((e,r)=>{let a=document.createElement("i");return a.textContent=String(e),(r===1||r===3)&&a.classList.add("caixa"),o.appendChild(a),a});return{acender(e){t.forEach((r,a)=>r.classList.toggle("aceso",a===e))},apagarTodos(){for(let e of t)e.classList.remove("aceso")}}}var O=o=>getComputedStyle(document.documentElement).getPropertyValue(o).trim();var Ro=16;function Et(o){let t=o.getContext("2d"),e=[],r=[],a=null;function i(){let l=window.devicePixelRatio||1,c=o.clientWidth,f=o.clientHeight;(o.width!==c*l||o.height!==f*l)&&(o.width=c*l,o.height=f*l),t.setTransform(l,0,0,l,0,0),t.clearRect(0,0,c,f);let d=14,n=(c-2*d)/Ro,u=s=>d+s*n+n/2,m=f*.3,v=f*.75;for(let s=0;s<Ro;s++)t.fillStyle=s%4===0?O("--painel"):O("--painel-2"),t.fillRect(d+s*n+1,8,n-2,f-16);for(let s of e){let p=u(s.passo);s.instrumento==="bumbo"?(t.fillStyle=O("--bumbo"),t.beginPath(),t.arc(p,m,n*.28,0,2*Math.PI),t.fill()):(t.fillStyle=O("--caixa"),t.fillRect(p-n*.28,m-n*.28,n*.56,n*.56))}t.lineWidth=3;for(let s of r){t.strokeStyle=s.cor;let p=u(s.passo);t.beginPath(),t.moveTo(p,v-12),t.lineTo(p,v+12),t.stroke()}if(a!==null){t.lineWidth=2,t.strokeStyle=O("--aviso");let s=d+a*n;t.beginPath(),t.moveTo(s,8),t.lineTo(s,f-8),t.stroke()}}return{desenharBeat(l,c){e=co(l,c).filter(f=>f.instrumento==="bumbo"||f.instrumento==="caixa").map(f=>({passo:f.passo,instrumento:f.instrumento})),i()},definirPosicao(l){a=l===null?null:l%Ro,i()},limparVoz(){r=[],i()},adicionarSilaba(l,c){r.push({passo:l,cor:c}),i()}}}var Ot=o=>o%2===1?1:.6;function ce(o){let t=Math.floor(o/4),e=o/4-t,r=(1-Math.cos(Math.PI*e))/2;return Ot(t)*(1-r)+Ot(t+1)*r}var uo=o=>ce(o)*(1+Math.cos(2*Math.PI*o/4))/2;function Bt(o){let t=o.getContext("2d");function e(){let a=window.devicePixelRatio||1,i=o.clientWidth,l=o.clientHeight;return(o.width!==i*a||o.height!==l*a)&&(o.width=i*a,o.height=l*a),t.setTransform(a,0,0,a,0,0),{W:i,H:l}}function r(a=0){let{W:i,H:l}=e(),c=14,f=l-22,d=f-14,n=m=>c+m/16*(i-2*c),u=m=>f-m*d;t.clearRect(0,0,i,l),t.strokeStyle=O("--linha"),t.lineWidth=1,t.beginPath(),t.moveTo(c,f),t.lineTo(i-c,f),t.stroke(),t.strokeStyle=O("--caixa"),t.setLineDash([4,4]),t.beginPath(),t.moveTo(n(12),10),t.lineTo(n(12),f),t.stroke(),t.setLineDash([]),t.strokeStyle=O("--texto"),t.lineWidth=3,t.beginPath();for(let m=0;m<=320;m++){let v=m/20;m?t.lineTo(n(v),u(uo(v))):t.moveTo(n(v),u(uo(v)))}t.stroke(),t.lineWidth=1,t.font="700 13px system-ui",t.textAlign="center",[0,4,8,12].forEach((m,v)=>{t.fillStyle=v%2===1?O("--caixa"):O("--bumbo"),t.beginPath(),t.arc(n(m),u(uo(m)),4,0,2*Math.PI),t.fill(),t.fillText(String(v+1),n(m),u(uo(m))-8)}),t.strokeStyle=O("--aviso"),t.beginPath(),t.moveTo(n(a),10),t.lineTo(n(a),f),t.stroke()}return{desenhar:r}}var T=o=>document.getElementById(o),{bpmMin:le,bpmMax:ue}=A.treino,P=null,No=1,w=!1,oo=null,F=null,mo=null,me=o=>o.outputLatency||o.baseLatency||0;function de(o){let t=K(P,o),e=T("bl-esconder").checked;T("tr-contador").textContent=e?"":`Compasso ${t.compassoNaSecao+1} de ${t.tamanho}`,T("tr-aviso-muda").hidden=e||t.ateMudar!==1,T("bl-secao").textContent=`se\xE7\xE3o ${t.indice+1} de ${P.secoes.length} \xB7 ${P.bpm} BPM`,F.desenharBeat(P,o)}function ko(){P=j({estilo:T("bl-estilo").value,semente:No}),T("bl-bpm").value=P.bpm,T("bl-semente").textContent=`Outro beat (n\xBA ${No})`,F.desenharBeat(P,0),mo.desenhar(0)}function yt(){if(!w)return;let{ctx:o,relogio:t}=oo,e=t.posicaoEm(o.currentTime-me(o)),r=e.compasso<0?0:e.passo;F.definirPosicao(r),mo.desenhar(r),requestAnimationFrame(yt)}function Lt(o){o.motor.aoCompasso(({beatN:t,tempo:e})=>{!w||P===null||o.sinc.agendarVisual(e,()=>{t<0?(T("tr-contador").textContent="Contagem",T("tr-aviso-muda").hidden=!0):de(t)})})}function jt(o){oo=o,w=!0,o.bateria.definirVolumeBeat(S().ajustes.volBeat),o.motor.tocarBeat(P),o.motor.iniciar(Number(T("bl-bpm").value)||P.bpm),requestAnimationFrame(yt)}function $o(){!F||P===null||w||(F.desenharBeat(P,0),mo.desenhar(0))}function wt(){w=!1,F?.definirPosicao(null),T("tr-aviso-muda").hidden=!0}function Dt(){F=Et(T("bl-grade")),mo=Bt(T("bl-curva")),ko(),T("bl-estilo").addEventListener("change",()=>{ko(),w&&oo.motor.tocarBeat(P)}),T("bl-semente").addEventListener("click",()=>{No=Math.floor(Math.random()*999)+1,ko(),w&&oo.motor.tocarBeat(P)}),T("bl-bpm").addEventListener("change",o=>{let t=Math.min(ue,Math.max(le,Math.round(Number(o.target.value))||P.bpm));o.target.value=t,P.bpm=t,w&&oo.motor.definirBpm(t)})}var V=o=>document.getElementById(o),to=null;function fe(o){return o==null?"":Math.abs(o)<=10?"em cima do tempo":o<0?"adiantado":"atrasado"}function It(o){to=o,V("res-nome").textContent=`${o.nome} \xB7 ${o.bpm} BPM`,V("res-estrelas").textContent="\u2605".repeat(o.estrelas)+"\u2606".repeat(3-o.estrelas),V("res-nota").textContent=`Nota ${Math.round(o.nota)} de 100`;let t="";if(o.erroMedioMs!==null&&o.erroMedioMs!==void 0){let r=fe(o.viesMs);t=`erro m\xE9dio ${o.erroMedioMs} ms${r?`, tend\xEAncia: ${r}`:""}`}else o.detalhes?.acertos!==void 0&&o.detalhes?.total!==void 0&&(t=`${o.detalhes.acertos} de ${o.detalhes.total} certas`);V("res-principal").textContent=t;let e=o.detalhes??{};V("res-detalhe").textContent=Object.entries(e).filter(([,r])=>typeof r=="number").map(([r,a])=>`${r}: ${a}`).join(" \xB7 ")}function Rt({repetir:o,proximo:t}){V("res-repetir").addEventListener("click",()=>{to&&o(to.modo)}),V("res-proximo").addEventListener("click",()=>{to&&t(to.modo)})}function kt({sessao:o,bpm:t,toqueMs:e,faixa:r,area:a,circulos:i,aoFinalizar:l}){let c=[],f=!1,d=!1;return{ctx:o.ctx,relogio:o.relogio,motor:o.motor,bateria:o.bateria,sinc:o.sinc,bpm:t,toqueMs:e,faixa:r,area:a,circulos:i,ativar(){f=!0},registrarToque(n){f&&c.push(n)},toquesDaRodada:()=>Bo(c),agendarFim(n,u){o.sinc.agendarVisual(n,u)},finalizar(n){d||(d=!0,f=!1,l(n))}}}var Nt=o=>o.length?o.reduce((t,e)=>t+e,0)/o.length:0;function eo(o){let[t,e,r]=A.pontuacao.estrelas;return o>=t?3:o>=e?2:o>=r?1:0}function fo(o,t=0){let e=A.pontuacao.toque,r=0,a=0,i=t;for(let f of o){let d=Math.abs(f);d<=e.acertoMs?r++:d<=e.quaseMs?a++:i++}let l=r+a+i,c=l?(r+.5*a)/l*100:0;return{nota:c,estrelas:eo(c),acertos:r,quase:a,erros:i,total:l,erroMedioAbsMs:o.length?Nt(o.map(Math.abs)):null,viesMs:o.length?Nt(o):null}}function pe(o,t,e=0){if(!t.length)return null;let r=o-e/1e3,a=0;for(let i=1;i<t.length;i++)Math.abs(t[i]-r)<Math.abs(t[a]-r)&&(a=i);return{erroMs:(r-t[a])*1e3,indice:a}}function H(o,t,{toqueMs:e=0,maxMs:r=350}={}){let a=new Set,i=[],l=0;for(let c of o){let f=pe(c,t,e);if(!f||Math.abs(f.erroMs)>r||a.has(f.indice)){l++;continue}a.add(f.indice),i.push(f.erroMs)}return{errosMs:i,perdidos:t.length-a.size,extras:l}}var $t=(o,t)=>Math.abs(o)<=t,J=o=>6e4/o;var Ft=8,Fo=[];function he(o){let t=Math.floor(Math.random()*1e6)+1,e=U(t),r=j({estilo:"boombap",bpm:o.bpm,semente:t}),a={compasso:1+Math.floor(e()*2),passo:Math.floor(e()*16)},i=L(o.bpm),l=null,c=!1;o.motor.tocarBeat(r),o.area.rotulo("SUA VEZ"),o.area.texto("Toque no tempo 1 de cada compasso."),o.area.respostas(!1),Fo.push(o.motor.aoPasso(({compasso:d,passo:n,tempo:u})=>{if(!c&&d===0&&n===0){c=!0,o.bateria.silenciarBeat(u,!0),l=[];for(let m=a.compasso+1;m<=a.compasso+Ft;m++)l.push(o.relogio.tempoDoPasso(m,0));o.agendarFim(o.relogio.tempoDoPasso(a.compasso+Ft+1,0),()=>f()),o.ativar()}d===a.compasso&&n===a.passo&&o.bateria.entrarBeat(u,4*i)}));function f(){let d=H(o.toquesDaRodada(),l,{toqueMs:o.toqueMs,maxMs:J(o.bpm)/2}),n=fo(d.errosMs,d.perdidos+d.extras);o.finalizar({nota:n.nota,estrelas:n.estrelas,erroMedioMs:n.erroMedioAbsMs,viesMs:n.viesMs,detalhes:{acertos:n.acertos,quase:n.quase,erros:n.erros,total:n.total}})}}function be(){for(let o of Fo)o();Fo=[]}var Vo={id:"ache-o-1",nome:"Ache o 1",precisaMic:!1,precisaVoz:!1,iniciar:he,parar:be};var D=10,ve=4,_o=[];function ge(o){let t=Math.floor(Math.random()*1e6)+1,e=U(t),r=Array.from({length:D},()=>1+Math.floor(e()*4)),a=new Array(D).fill(null),i=o.ctx.outputLatency||o.ctx.baseLatency||0;o.motor.tocarBeat(null),o.area.rotulo("PERGUNTA"),o.area.texto("Qual tempo piscou?"),o.area.respostas(!0,d=>c(d)),o.ativar();let l=!1;_o.push(o.motor.aoPasso(({compasso:d,passo:n,tempo:u})=>{!l&&d===0&&n===0&&(l=!0,o.agendarFim(o.relogio.tempoDoPasso(D+1,0),()=>f()));let m=d-1;m<0||m>=D||(n===0&&o.sinc.agendarVisual(u,()=>{o.circulos.apagarTodos(),o.area.texto(`Pergunta ${m+1} de ${D}`)}),n===(r[m]-1)*ve&&o.sinc.agendarVisual(u,()=>o.circulos.acender(r[m]-1)))}));function c(d){let u=o.relogio.posicaoEm(o.ctx.currentTime-i).compasso-1;u<0||u>=D||a[u]!==null||(a[u]=d)}function f(){let d=a.filter((u,m)=>u===r[m]).length,n=d/D*100;o.finalizar({nota:n,estrelas:eo(n),erroMedioMs:null,viesMs:null,detalhes:{acertos:d,total:D}})}}function Me(){for(let o of _o)o();_o=[]}var zo={id:"que-tempo",nome:"Que tempo foi?",precisaMic:!1,precisaVoz:!1,iniciar:ge,parar:Me};var po=6,xe=2,Uo=[];function Se(o){let t=Math.floor(Math.random()*1e6)+1,e=j({estilo:"boombap",bpm:o.bpm,semente:t});o.motor.tocarBeat(e),o.area.rotulo("ESCUTA"),o.area.texto("Toque no tempo 1 em que a se\xE7\xE3o nova come\xE7a."),o.area.respostas(!1);let r=[];for(let c=1;r.length<po;c++)K(e,c).compassoNaSecao===0&&r.push(c);let a=null,i=!1;Uo.push(o.motor.aoCompasso(({compasso:c,beatN:f,tempo:d})=>{if(!i&&c===0&&(i=!0,a=r.map(u=>o.relogio.tempoDoPasso(u+1,0)),o.agendarFim(o.relogio.tempoDoPasso(r[po-1]+2,0),()=>l()),o.ativar()),c<1)return;let n=r.findIndex(u=>u>=f);o.sinc.agendarVisual(d,()=>{if(n>=0&&n<xe){let u=r[n]-f;o.area.texto(u===0?"Mudan\xE7a agora":`Muda em ${u} compasso${u===1?"":"s"}`)}else o.area.texto("Toque no tempo 1 em que a se\xE7\xE3o nova come\xE7a.")})}));function l(){let c=J(o.bpm),f=H(o.toquesDaRodada(),a,{toqueMs:o.toqueMs,maxMs:c}),d=f.errosMs.filter(m=>$t(m,c)).length,n=d/po*100,u=f.errosMs.length?f.errosMs.reduce((m,v)=>m+Math.abs(v),0)/f.errosMs.length:null;o.finalizar({nota:n,estrelas:eo(n),erroMedioMs:u===null?null:Math.round(u),viesMs:null,detalhes:{acertos:d,mudancas:po,toquesFora:f.extras}})}}function Ce(){for(let o of Uo)o();Uo=[]}var Go={id:"preveja-mudanca",nome:"Preveja a mudan\xE7a",precisaMic:!1,precisaVoz:!1,iniciar:Se,parar:Ce};var qe=4,Vt=4,Te=4,Pe=12,Ho=[];function Ae(o){return o<=2?1:o<=4?2:4}function Ee(o){let t=Math.floor(Math.random()*1e6)+1,e=j({estilo:"boombap",bpm:o.bpm,semente:t}),r=Ae(o.faixa),a=Vt+r,i=qe*a,l=n=>(n-1)%a>=Vt,c=null,f=!1;o.motor.tocarBeat(e),o.area.rotulo("SEGURE O PULSO"),o.area.texto("Toque nos tempos 2 e 4, com ou sem som."),o.area.respostas(!1),Ho.push(o.motor.aoCompasso(({compasso:n,tempo:u})=>{if(!f&&n===0){f=!0,c=[];for(let m=1;m<=i;m++)l(m)&&c.push(o.relogio.tempoDoPasso(m,Te),o.relogio.tempoDoPasso(m,Pe));o.agendarFim(o.relogio.tempoDoPasso(i+1,0),()=>d()),o.ativar()}n>=0&&o.bateria.silenciarBeat(u,n>=1&&n<=i&&l(n))}));function d(){let n=J(o.bpm),u=H(o.toquesDaRodada(),c,{toqueMs:o.toqueMs,maxMs:n/2}),m=fo(u.errosMs,u.perdidos+u.extras);o.finalizar({nota:m.nota,estrelas:m.estrelas,erroMedioMs:m.erroMedioAbsMs,viesMs:m.viesMs,detalhes:{acertos:m.acertos,quase:m.quase,erros:m.erros,total:m.total,silenciosos:c.length/2}})}}function Oe(){for(let o of Ho)o();Ho=[]}var Jo={id:"beat-fantasma",nome:"Beat fantasma",precisaMic:!1,precisaVoz:!1,iniciar:Ee,parar:Oe};var Q={[Vo.id]:Vo,[zo.id]:zo,[Go.id]:Go,[Jo.id]:Jo},_t=[{id:"ache-o-1",nome:"Ache o 1",ativo:!0},{id:"que-tempo",nome:"Que tempo foi?",ativo:!0},{id:"preveja-mudanca",nome:"Preveja a mudan\xE7a",ativo:!0},{id:"beat-fantasma",nome:"Beat fantasma",ativo:!0},{id:"pega-o-beat",nome:"Pega o beat",ativo:!1},{id:"rima-no-4",nome:"Rima no 4",ativo:!1},{id:"palavra-alvo",nome:"Palavra-alvo",ativo:!1},{id:"quatro-palavras",nome:"Quatro palavras",ativo:!1},{id:"batalha",nome:"Batalha",ativo:!1},{id:"livre",nome:"Livre",ativo:!1}];var b=o=>document.getElementById(o),{bpmMin:zt,bpmMax:Ut,bpmInicial:Jt,passoBpm:Gt}=A.treino,Be=()=>new Date().toISOString().slice(0,10),xo=o=>Object.prototype.hasOwnProperty.call(Q,o),Qo=Object.keys(Q),x="metronomo",ao=Jt,I=!1,vo=null,ro=null,Ht=!1,R=null,Zo=null,ye={rotulo(o){let t=b("modo-rotulo");t.textContent=o,t.className="rotulo-vez "+(o==="ESCUTA"?"escuta":"fala")},texto(o){b("modo-texto").textContent=o},respostas(o,t){b("modo-respostas").hidden=!o,Zo=o?t:null}};function Ko(o,t){return{bpm:Jt,boasSeguidas:0,ruinsSeguidas:0,melhorNota:0,...o.modos[t]??{}}}var So=o=>Ko(S(),o).bpm;function Le(o){o.motor.aoPasso(({compasso:t,passo:e,tempo:r})=>{if(x!=="metronomo"||e%4!==0)return;let a=e/4;o.sinc.agendarVisual(r,()=>{t===0?(b("tr-contador").textContent=String(4-a),ro.apagarTodos()):(b("tr-contador").textContent=`Compasso ${t}`,ro.acender(a))})})}function je(){let o=lo();return Ht||(Le(o),Lt(o),Ht=!0),o}var we=()=>xo(x)?So(x):ao;function go(){b("tr-bpm").textContent=`${we()} BPM`}function bo(){let o=S().ajustes.volClique;b("tr-volClique").value=o,b("tr-volClique-valor").textContent=Number(o).toFixed(2),b("tr-aviso-volume").textContent=o===0?"O volume do clique est\xE1 em 0. Suba o controle para ouvir.":""}function Wo(){let o=G();if(!o){b("tr-latencia").textContent="Toque em Come\xE7ar para medir a lat\xEAncia.";return}let t=e=>Math.round((e||0)*1e3);b("tr-latencia").textContent=`Lat\xEAncia: sa\xEDda ${t(o.ctx.outputLatency)} ms \xB7 base ${t(o.ctx.baseLatency)} ms`}async function De(){try{vo=await navigator.wakeLock.request("screen")}catch{vo=null}}function Ie(){try{vo?.release()}catch{}vo=null}function Re(o){let t=x,e=S().ajustes;o.bateria.definirVolumeBeat(e.volBeat);let r=kt({sessao:o,bpm:So(t),toqueMs:S().calibracao.toqueMs,faixa:S().faixa,area:ye,circulos:ro,aoFinalizar:a=>$e(t,a)});R={id:t,modoObj:Q[t],contexto:r},R.modoObj.iniciar(r),o.motor.iniciar(r.bpm)}function ke(){let o=je();o.bateria.definirVolumeClique(S().ajustes.volClique),x==="beat"?jt(o):xo(x)?Re(o):(o.motor.tocarBeat(null),o.motor.iniciar(ao)),I=!0,b("tr-pausado").hidden=!0,b("tr-iniciar").textContent="Parar",bo(),Wo(),De()}function no(){let o=G();o&&(o.motor.parar(),o.sinc.limpar(),ro.apagarTodos(),wt(),R&&(R.modoObj.parar(),R=null),Zo=null,I=!1,b("tr-iniciar").textContent="Come\xE7ar",b("tr-contador").textContent="Pronto",Ie())}function Ne(o){no(),b("tr-pausado").textContent=o,b("tr-pausado").hidden=!1}function $e(o,t){let e=R?.contexto.bpm??So(o);no();let r=Math.round(t.nota);E(a=>{a.historico.push({data:Be(),modo:o,bpm:e,nota:r,fecho:null,grade:null,densidade:null,respiro:null,viesMs:t.viesMs??null,erroMedioMs:t.erroMedioMs??null,silabas:null,rima:null});let i=Ko(a,o);a.modos[o]={...i,bpm:e,melhorNota:Math.max(i.melhorNota??0,r)}}),It({modo:o,nome:Q[o].nome,bpm:e,...t}),Po("resultado")}function ho(o){if(xo(x)){if(I)return;let t=Math.min(Ut,Math.max(zt,So(x)+o));E(e=>{e.modos[x]={...Ko(e,x),bpm:t}}),go();return}ao=Math.min(Ut,Math.max(zt,ao+o)),go(),I&&x==="metronomo"&&G().motor.definirBpm(ao)}function Fe(){b("bloco-metronomo").hidden=x!=="metronomo",b("bloco-bpm").hidden=x==="beat",b("bloco-beat").hidden=x!=="beat",b("bloco-toque").hidden=!xo(x),b("tr-titulo").textContent=x==="metronomo"?"Metr\xF4nomo":x==="beat"?"Beat livre (teste)":Q[x]?.nome??""}function Xo(o){I&&no(),x=o,b("tr-modo").value=o,Fe(),go(),b("tr-contador").textContent="Pronto",b("tr-aviso-muda").hidden=!0,b("modo-rotulo").textContent="",b("modo-texto").textContent="",b("modo-respostas").hidden=!0,x==="beat"&&$o()}function Ve(o){let t=Qo.indexOf(o);return Qo[(t+1)%Qo.length]}function Mo(o){Xo(o),Po("treino")}function Qt(){ro=At(b("tr-tempos")),Dt(),Rt({repetir:Mo,proximo:o=>Mo(Ve(o))}),bo(),Wo(),b("tr-modo").addEventListener("change",o=>Xo(o.target.value)),b("tr-iniciar").addEventListener("click",()=>I?no():ke()),b("tr-m4").addEventListener("click",()=>ho(-Gt)),b("tr-m1").addEventListener("click",()=>ho(-1)),b("tr-p1").addEventListener("click",()=>ho(1)),b("tr-p4").addEventListener("click",()=>ho(Gt)),b("modo-toque").addEventListener("pointerdown",()=>{R&&R.contexto.registrarToque(G().ctx.currentTime)});for(let o of document.querySelectorAll("#modo-respostas button"))o.addEventListener("click",()=>Zo?.(Number(o.dataset.n)));b("tr-volClique").addEventListener("input",o=>{let t=Number(o.target.value);E(e=>{e.ajustes.volClique=t}),G()?.bateria.definirVolumeClique(t),bo()}),document.addEventListener("visibilitychange",()=>{document.hidden&&I&&Ne("Pausado: o app saiu da tela. Toque em Come\xE7ar.")}),window.addEventListener("hashchange",()=>{To()!=="treino"&&I&&no()}),io("treino",()=>{bo(),Wo(),go(),$o()}),Xo(x)}function Wt(o){let t=document.getElementById("modos-lista");function e(){t.innerHTML="";let r=S().modos;for(let a of _t){let i=document.createElement("button");if(i.type="button",i.className="botao sec",i.textContent=a.nome,a.ativo){let l=r[a.id]??{},c=document.createElement("small");c.textContent=`${l.bpm??A.treino.bpmInicial} BPM \xB7 melhor nota ${l.melhorNota??0}`,i.appendChild(c),i.addEventListener("click",()=>o(a.id))}else i.textContent=`${a.nome} \xB7 em breve`,i.disabled=!0,i.classList.add("desligado");t.appendChild(i)}}io("modos",e),e()}function _e(){let o=S();document.getElementById("inicio-faixa").textContent=String(o.faixa),document.getElementById("inicio-seq").textContent=String(o.sequencia.dias)}ut();Pt();Qt();Wt(Mo);_e();et();})();
+
+</script>
+</body>
+</html>
