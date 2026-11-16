@@ -1,0 +1,33 @@
+/* tokens.css — cores, tamanhos e componentes-base do Dojo. PRONTO: o style.css importa este arquivo
+   (@import "tokens.css";) e só usa estas variáveis. Não crie cores novas fora daqui. Ver docs/VISUAL.md. */
+:root {
+  --fundo:#0e0f13; --painel:#1a1c23; --painel-2:#11131a; --linha:#2b2f3a;
+  --texto:#f2f2f2; --suave:#9aa3b2;
+  --bumbo:#4da3ff; --caixa:#ff8a3d; --voz:#3ddc84; --erro:#ff4d5e; --aviso:#ffd23d;
+  --raio:14px; --raio-botao:12px; --toque:52px; --espaco:16px;
+  --f-tempo:700 48px system-ui; --f-titulo:700 21px system-ui; --f-contador:600 20px system-ui; --f-texto:16px/1.45 system-ui; --f-mono:13px/1.6 ui-monospace,Menlo,monospace;
+}
+* { box-sizing:border-box; }
+html, body { margin:0; background:var(--fundo); color:var(--texto); font:var(--f-texto); font-variant-numeric:tabular-nums; -webkit-tap-highlight-color:transparent; }
+body { max-width:430px; margin-inline:auto; padding:var(--espaco) var(--espaco) calc(72px + env(safe-area-inset-bottom)); }
+h1 { font:var(--f-titulo); margin:4px 0; }
+p, .suave { color:var(--suave); }
+.painel { background:var(--painel); border:1px solid var(--linha); border-radius:var(--raio); padding:12px; margin:12px 0; }
+.botao { width:100%; min-height:var(--toque); border:0; border-radius:var(--raio-botao); background:var(--voz); color:#06210f; font:700 17px system-ui; }
+.botao.sec { background:#262b36; color:var(--texto); }
+.botao:disabled { opacity:.45; }
+.botao:focus-visible, a:focus-visible, input:focus-visible { outline:2px solid var(--aviso); outline-offset:2px; }
+.tempos { display:flex; gap:10px; }
+.tempos > i { flex:1; aspect-ratio:1; max-height:76px; border-radius:50%; display:grid; place-items:center; font:700 30px system-ui; font-style:normal; background:var(--painel-2); border:3px solid var(--linha); color:var(--suave); }
+.tempos > i.caixa { border-color:var(--caixa); }
+.tempos > i.aceso { background:var(--bumbo); color:#06101f; }
+.tempos > i.caixa.aceso { background:var(--caixa); }
+.faixa-aviso { background:var(--aviso); color:#221a00; font-weight:700; text-align:center; border-radius:10px; padding:8px; }
+.rotulo-vez { font:800 34px system-ui; text-align:center; letter-spacing:.04em; }
+.rotulo-vez.fala { color:var(--voz); } .rotulo-vez.escuta { color:var(--suave); }
+.barra-metrica { height:12px; border-radius:6px; background:var(--painel-2); overflow:hidden; }
+.barra-metrica > i { display:block; height:100%; background:var(--voz); }
+.nav { position:fixed; inset:auto 0 0 0; display:flex; background:var(--painel); border-top:1px solid var(--linha); padding-bottom:env(safe-area-inset-bottom); }
+.nav > a { flex:1; min-height:56px; display:grid; place-items:center; color:var(--suave); text-decoration:none; font-size:12px; }
+.nav > a.ativo { color:var(--voz); }
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
